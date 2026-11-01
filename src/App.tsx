@@ -1,4 +1,4 @@
-import React, { useState, Suspense, useEffect, useMemo, useRef} from 'react'
+import { useState, Suspense, useEffect, useMemo, useRef} from 'react'
 import './App.css'
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
@@ -6,59 +6,78 @@ import earthUrl from "./assets/3d/Earth.glb?url";
 import { Box3, Vector3, Mesh } from "three";
 import {PerspectiveCamera } from "three";
 
+  const starDistance = 3;
+
 async function loadbsc5<T>(path: string): Promise<T> {
   const response = await fetch(path);
 
   if (!response.ok) {
       throw new Error(`Failed to load JSON: ${response.status}`);
   }
-
     return response.json() as Promise<T>;
 }
 
 type bsc5Type = {
   columns: string[],
-  data: [number, string, number, number, number, string | null, number][]
+  data: [number, string | null, number, number, number, string | null, number][]
 }
 
 const bsc5 = await loadbsc5<bsc5Type>("./src/assets/data/bsc5.json");
+const pickedData = bsc5.data[5000]
 
-const getMockPosition = (
-  success: PositionCallback,
-  _error?: PositionErrorCallback | null,
-  _options?: PositionOptions,
-): void => {
-  const position: GeolocationPosition = {
-    coords: {
-      latitude: 25.07725,
-      longitude: 55.30927,
-      accuracy: 10,
-      altitude: null,
-      altitudeAccuracy: null,
-      heading: null,
-      speed: null,
-      toJSON() {
-        return {
-          latitude: this.latitude,
-          longitude: this.longitude,
-          accuracy: this.accuracy,
-          altitude: this.altitude,
-          altitudeAccuracy: this.altitudeAccuracy,
-          heading: this.heading,
-          speed: this.speed,
-        }
-      },
-    },
-    timestamp: Date.now(),
-    toJSON() {
-      return {
-        coords: this.coords.toJSON(),
-        timestamp: this.timestamp,
-      }
-    },
-  }
+function StarDataTest() {
+  return (
+    pickedData.join(", ")
+  )
+}
 
-  setTimeout(() => success(position), 0)
+function StarRing() {
+  return (
+    <mesh position={[0, Math.sin(pickedData[3] * Math.PI / 180) * starDistance, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      <torusGeometry args={[starDistance * Math.cos(pickedData[3] * Math.PI / 180), 0.01, 32, 100]} />
+      <meshStandardMaterial
+        color="white"
+        metalness={0.7}
+        roughness={0.3}
+      />
+    </mesh>
+  );
+}
+
+function StarDot() {
+  const markerRef = useRef<Mesh>(null);
+  const { camera, size } = useThree();
+
+  const radius = starDistance
+  const phi = (pickedData[3] * Math.PI) / 180;
+  const lambda = (pickedData[2] * Math.PI) / 180;
+
+  const position: [number, number, number] = [
+    -radius * Math.cos(phi) * Math.sin(lambda),
+    radius * Math.sin(phi),
+    -radius * Math.cos(phi) * Math.cos(lambda),
+  ];
+
+  useFrame(() => {
+    if (!markerRef.current) return;
+
+    const distance = camera.position.distanceTo(
+      markerRef.current.position
+    );
+
+    const fov = (camera as PerspectiveCamera).fov;
+    const visibleHeight = 2 * Math.tan((fov * Math.PI) / 360) * distance;
+    const worldSize = (visibleHeight / size.height) * 6;
+
+    markerRef.current.scale.setScalar(worldSize / 0.025);
+  });
+
+  return (
+    <mesh ref={markerRef} position={position}>
+      <sphereGeometry args={[0.025, 16, 16]} />
+      <meshBasicMaterial color="white" depthTest={true} />
+    </mesh>
+  );
 }
 
 function LocationMarker({
@@ -67,19 +86,18 @@ function LocationMarker({
   }: {
     latitude: number;
     longitude: number;
-  }
-) {
+  }) {
   const markerRef = useRef<Mesh>(null);
   const { camera, size } = useThree();
 
   const radius = 1.003;
-  const phi = (latitude * Math.PI) / 180;
-  const lambda = (longitude * Math.PI) / 180;
+  const latitudeDegrees = (latitude * Math.PI) / 180;
+  const longitudeDegrees = (longitude * Math.PI) / 180;
 
   const position: [number, number, number] = [
-    -radius * Math.cos(phi) * Math.sin(lambda),
-    radius * Math.sin(phi),
-    -radius * Math.cos(phi) * Math.cos(lambda),
+    -radius * Math.cos(latitudeDegrees) * Math.sin(longitudeDegrees),
+    radius * Math.sin(latitudeDegrees),
+    -radius * Math.cos(latitudeDegrees) * Math.cos(longitudeDegrees),
   ];
 
   useFrame(() => {
@@ -106,7 +124,7 @@ function LocationMarker({
   );
 }
 
-function Model() {
+function EarthModel({ location }: { location: Location | null }) {
   const { scene } = useGLTF(earthUrl);
 
   const model = useMemo(() => {
@@ -125,6 +143,15 @@ function Model() {
     // Center the model after scaling
     clone.position.copy(center).multiplyScalar(-2 / maxDimension);
 
+/*     if (location !== null) {
+      const phi = (90 - location.latitude) * (Math.PI / 180);
+      const theta = (location.longitude + 180) * (Math.PI / 180);
+      const x = -Math.sin(phi) * Math.cos(theta);
+      const y = Math.cos(phi);
+      const z = Math.sin(phi) * Math.sin(theta);
+      clone.rotation.set(x, y, z);
+    } */
+
     //  console.log("Model dimensions:", size);
     // console.log("Model center:", center);
 
@@ -133,7 +160,6 @@ function Model() {
 
   return <primitive object={model} />;
 }
-
 
 type Location = {
   latitude: number;
@@ -170,7 +196,7 @@ function Scene({ location }: { location: Location | null }) {
       <directionalLight position={[5, 3, 5]} intensity={3} />
 
       <Suspense fallback={null}>
-        <Model />
+        <EarthModel location={location}/>
       </Suspense>
 
       {location && (
@@ -180,26 +206,41 @@ function Scene({ location }: { location: Location | null }) {
         />
       )}
 
+      <StarRing />
+      <StarDot />
+
       <OrbitControls />
     </Canvas>
   );
 }
 
 function App() {
+  const latRef = useRef<HTMLInputElement>(null);
+  const longRef = useRef<HTMLInputElement>(null);
   const [location, setLocation] = useState<Location | null>(null);
 
   const handleGetLocation = () => {
-    getMockPosition((position) => {
-      setLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      });
-    });
-  };
+    if (!latRef.current || !longRef.current) return;
+    if (latRef.current.value.trim() === "" || longRef.current.value.trim() === "") return;
+    let latNum: number = Number(latRef.current.value.trim())
+    let longNum: number = Number(longRef.current.value.trim())
+    if(
+      -90 <= latNum &&
+      latNum <= 90 &&
+      -180 <= longNum &&
+      longNum <= 180) {
+        setLocation({
+          latitude: latNum,
+          longitude: longNum,
+        });
+    };
+  }
 
   return (
     <>
       <section id="main">
+        <input placeholder="Latitude" ref={latRef}></input>
+        <input placeholder="Longitude" ref={longRef}></input>
         <button type="button" onClick={handleGetLocation}>
           Show Location on Earth
         </button>
@@ -212,7 +253,7 @@ function App() {
 
         <Scene location={location} />
 
-            
+        <StarDataTest />
 
       </section>
     </>
