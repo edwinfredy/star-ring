@@ -1,69 +1,26 @@
-import { useState, Suspense, useEffect, useMemo, useRef} from 'react'
+import { useState, Suspense, useEffect, useRef} from 'react'
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import earthUrl from "./assets/3d/Earth.glb?url";
-import { Box3, Vector3, Mesh, PerspectiveCamera, Spherical, MathUtils, BufferGeometry, Line, LineBasicMaterial, Color, BufferAttribute, TorusGeometry } from "three";
+import { OrbitControls } from "@react-three/drei";
+import { Mesh, Spherical, MathUtils} from "three";
 import './App.css'
+import StarLine from './StarLine';
+import type {Coordinates, bsc5Type} from './types'
+import EarthModel from './EarthModel';
+import StarDot from './StarDot';
+import StarRing from './StarRing';
+import LocationMarker from './LocationMarker';
 
-const starDistance = 3;
 const cameraDistance = 6;
-
-type bsc5Type = {
-  columns: string[],
-  data: [number, string | null, number, number, number, string | null, number][]
-}
 
 async function loadbsc5<T>(path: string): Promise<T> {
   const response = await fetch(path);
 
   if (!response.ok) {
-      throw new Error(`Failed to load JSON: ${response.status}`);
+    throw new Error(`Failed to load JSON: ${response.status}`);
   }
-    return response.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }
-
 const bsc5 = await loadbsc5<bsc5Type>("./src/assets/data/bsc5.json");
-
-function StarLine({earthPoint, starData}: {earthPoint: Coordinates, starData: typeof bsc5['data'][number]}) {
-  const latitudeDegrees = MathUtils.degToRad(earthPoint.latitude);
-  const longitudeDegrees = MathUtils.degToRad(earthPoint.longitude);
-  const earthPointRadius = 1;
-
-  const earthPointCoords: [number, number, number] = [
-    -earthPointRadius * Math.cos(latitudeDegrees) * Math.sin(longitudeDegrees),
-    earthPointRadius * Math.sin(latitudeDegrees),
-    -earthPointRadius * Math.cos(latitudeDegrees) * Math.cos(longitudeDegrees),
-  ];
-
-  const starPointRadius = starDistance
-  const phi = MathUtils.degToRad(starData[3]);
-  const lambda = MathUtils.degToRad(starData[2]);
-
-  const starPointCoords: [number, number, number] = [
-    -starPointRadius * Math.cos(phi) * Math.sin(lambda),
-    starPointRadius * Math.sin(phi),
-    -starPointRadius * Math.cos(phi) * Math.cos(lambda),
-  ];
-
-  const points = useMemo(() => [
-    new Vector3().fromArray(earthPointCoords),
-    new Vector3().fromArray(starPointCoords)
-  ], [earthPoint, starData])
-  const geometry = useMemo(() =>
-    new BufferGeometry().setFromPoints(points),
-  [points]
-  )
-  return (
-    <primitive
-      object={
-        new Line(
-          geometry,
-          new LineBasicMaterial({ color: 'white' })
-        )
-      }
-    />
-  )
-}
 
 function CameraAutoMove({location, autoMove, setAutoMove}: {
   location: Coordinates,
@@ -107,224 +64,24 @@ function CameraAutoMove({location, autoMove, setAutoMove}: {
 
 function StarDataDisplayer({chosenStar}: {chosenStar: typeof bsc5['data'][number]}) {
   return (
-    chosenStar.join(", ")
+    <div id="dataWindow">
+      HR{chosenStar[0]} &nbsp;
+      Name: {chosenStar[1]} &nbsp;
+      Right Ascension: {chosenStar[2]} &nbsp;
+      Declination: {chosenStar[3]} &nbsp;
+      Visual Magnitude: {chosenStar[4]} &nbsp;
+      Multiple System: {chosenStar[5]} &nbsp;
+      Class: {chosenStar[6]}
+    </div>
   )
 }
 
-function StarRing({
-  chosenStar,
-  location,
-}: {
-  chosenStar: typeof bsc5['data'][number];
-  location: Coordinates;
+function Scene({ location, chosenStar, starDistance }: {
+  location: Coordinates | null,
+  chosenStar: typeof bsc5['data'][number],
+  starDistance: number
 }) {
-  const declination = chosenStar[3];
-  const rightAscension = chosenStar[2];
-  const latitude = location.latitude;
-
-  const cosHourAngle = -Math.tan(MathUtils.degToRad(latitude)) * Math.tan(MathUtils.degToRad(declination));
-  const hourAngle = MathUtils.radToDeg(Math.acos(cosHourAngle));
-  const tubularSegments = 256;
-  const radialSegments = 32;
-
-  const risingAndSetting = useMemo(() => {
-    if (cosHourAngle < -1) {
-      return { alwaysVisible: true, neverVisible: false };
-    }
-    if (cosHourAngle > 1) {
-      return { alwaysVisible: false, neverVisible: true };
-    }
-    return {
-      alwaysVisible: false,
-      neverVisible: false,
-      risingAngle: MathUtils.euclideanModulo(MathUtils.degToRad(-location.longitude + hourAngle), Math.PI * 2),
-      settingAngle: MathUtils.euclideanModulo(MathUtils.degToRad(-location.longitude - hourAngle), Math.PI * 2)
-    };
-  }, [cosHourAngle, rightAscension, location]);
-
-  const geometry = useMemo(() => {
-
-    type RisingAndSetting = {
-      alwaysVisible: boolean;
-      neverVisible: boolean;
-      risingAngle?: number;
-      settingAngle?: number;
-    };
-    const ringRadius = starDistance * Math.cos(MathUtils.degToRad(declination));
-    const geometry = new TorusGeometry(
-      ringRadius,
-      0.01,
-      radialSegments,
-      tubularSegments,
-    );
-
-    const visibleColor = new Color('white');
-    const hiddenColor = new Color('red');
-
-    const colors = new Float32Array(geometry.attributes.position.count * 3);
-
-    for (let j = 0; j <= radialSegments; j++) {
-      for (let i = 0; i <= tubularSegments; i++) {
-        const angle = (i / tubularSegments) * Math.PI * 2;
-
-        const isVisible =
-          risingAndSetting.alwaysVisible || (
-            !risingAndSetting.neverVisible &&
-            risingAndSetting.risingAngle !== undefined &&
-            risingAndSetting.settingAngle !== undefined && (
-              risingAndSetting.risingAngle >= risingAndSetting.settingAngle ? 
-                angle <= risingAndSetting.risingAngle && angle >= risingAndSetting.settingAngle :
-                angle <= risingAndSetting.risingAngle || angle >= risingAndSetting.settingAngle
-            )
-          );
-
-        const color = isVisible ? visibleColor : hiddenColor;
-
-        const index = j * (tubularSegments + 1) + i;
-
-        colors[index * 3] = color.r;
-        colors[index * 3 + 1] = color.g;
-        colors[index * 3 + 2] = color.b;
-      }
-    }
-
-    geometry.setAttribute('color', new BufferAttribute(colors, 3));
-
-    return geometry;
-  }, [declination, risingAndSetting]);
-
-  return (
-    <mesh
-      geometry={geometry}
-      position={[0, Math.sin(MathUtils.degToRad(declination)) * starDistance, 0]}
-      rotation={[Math.PI / 2, 0, -Math.PI / 2]}
-    >
-      <meshStandardMaterial
-        vertexColors
-        metalness={0.7}
-        roughness={0.3}
-      />
-    </mesh>
-  );
-}
-
-function StarDot({chosenStar}: {chosenStar: typeof bsc5['data'][number]}) {
-  const markerRef = useRef<Mesh>(null);
-  const { camera, size } = useThree();
-
-  const radius = starDistance
-  const phi = MathUtils.degToRad(chosenStar[3]);
-  const lambda = MathUtils.degToRad(chosenStar[2]);
-
-  const position: [number, number, number] = [
-    -radius * Math.cos(phi) * Math.sin(lambda),
-    radius * Math.sin(phi),
-    -radius * Math.cos(phi) * Math.cos(lambda),
-  ];
-
-  useFrame(() => {
-    if (!markerRef.current) return;
-
-    const distance = camera.position.distanceTo(
-      markerRef.current.position
-    );
-
-    const fov = (camera as PerspectiveCamera).fov;
-    const visibleHeight = 2 * Math.tan((fov * Math.PI) / 360) * distance;
-    const worldSize = (visibleHeight / size.height) * 6;
-
-    markerRef.current.scale.setScalar(worldSize / 0.025);
-  });
-
-  return (
-    <mesh ref={markerRef} position={position}>
-      <sphereGeometry args={[0.025, 16, 16]} />
-      <meshBasicMaterial color="white" depthTest={true} />
-    </mesh>
-  );
-}
-
-function LocationMarker({location}: {location: Coordinates}) {
-  const markerRef = useRef<Mesh>(null);
-  const { camera, size } = useThree();
-
-  const radius = 1.003;
-  const latitudeDegrees = MathUtils.degToRad(location.latitude);
-  const longitudeDegrees = MathUtils.degToRad(location.longitude);
-
-  const position: [number, number, number] = [
-    -radius * Math.cos(latitudeDegrees) * Math.sin(longitudeDegrees),
-    radius * Math.sin(latitudeDegrees),
-    -radius * Math.cos(latitudeDegrees) * Math.cos(longitudeDegrees),
-  ];
-
-  useFrame(() => {
-    if (!markerRef.current) return;
-
-    const distance = camera.position.distanceTo(
-      markerRef.current.position
-    );
-
-    const fov = (camera as PerspectiveCamera).fov;
-    const visibleHeight =
-      2 * Math.tan((fov * Math.PI) / 360) * distance;
-
-    const worldSize = (visibleHeight / size.height) * 6;
-
-    markerRef.current.scale.setScalar(worldSize / 0.025);
-  });
-
-  return (
-    <mesh ref={markerRef} position={position}>
-      <sphereGeometry args={[0.025, 16, 16]} />
-      <meshBasicMaterial color="red" depthTest={true} />
-    </mesh>
-  );
-}
-
-function EarthModel() {
-  const { scene } = useGLTF(earthUrl);
-
-  const model = useMemo(() => {
-    const clone = scene.clone(true);
-
-    // Calculate the model's bounding box
-    const bounds = new Box3().setFromObject(clone);
-    const size = bounds.getSize(new Vector3());
-    const center = bounds.getCenter(new Vector3());
-    const maxDimension = Math.max(size.x, size.y, size.z);
-
-    if (maxDimension > 0) {
-      clone.scale.setScalar(2 / maxDimension);
-    }
-
-    // Center the model after scaling
-    clone.position.copy(center).multiplyScalar(-2 / maxDimension);
-
-/*     if (location !== null) {
-      const phi = (90 - location.latitude) * (Math.PI / 180);
-      const theta = (location.longitude + 180) * (Math.PI / 180);
-      const x = -Math.sin(phi) * Math.cos(theta);
-      const y = Math.cos(phi);
-      const z = Math.sin(phi) * Math.sin(theta);
-      clone.rotation.set(x, y, z);
-    } */
-
-    //  console.log("Model dimensions:", size);
-    // console.log("Model center:", center);
-
-    return clone;
-  }, [scene]);
-
-  return <primitive object={model} />;
-}
-
-type Coordinates = {
-  latitude: number;
-  longitude: number;
-};
-
-function Scene({ location, chosenStar }: { location: Coordinates | null , chosenStar: typeof bsc5['data'][number]}) {
+  const globeRef = useRef<Mesh>(null!)
   const [autoMove, setAutoMove] = useState(true)
   const [isDark, setIsDark] = useState(() => 
     window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -346,29 +103,22 @@ function Scene({ location, chosenStar }: { location: Coordinates | null , chosen
 
   return (
     <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }}>
-      <color
-        attach="background"
-        args={[isDark ? "#000000" : "#ffffff"]}
-      />
-
+      <color attach="background" args={[isDark ? "#000000" : "#ffffff"]} />
       <ambientLight intensity={2} />
       <directionalLight position={[5, 3, 5]} intensity={3} />
-
       <Suspense fallback={null}>
-        <EarthModel />
+        <EarthModel ref = {globeRef} />
       </Suspense>
-
       {location && (
         <LocationMarker location={location} />
       )}
       {location && (
-        <StarRing chosenStar = {chosenStar} location={location} />
+        <StarRing chosenStar = {chosenStar} location={location} starDistance = {starDistance} />
       )}
-      <StarDot chosenStar = {chosenStar} />
+      <StarDot chosenStar = {chosenStar} starDistance = {starDistance}/>
       {location && (
-        <StarLine earthPoint={location} starData={chosenStar}/>
+        <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef}/>
       )}
-
       {location && (
         <CameraAutoMove location={location} autoMove={autoMove} setAutoMove={setAutoMove}
       />)}
@@ -380,45 +130,61 @@ function Scene({ location, chosenStar }: { location: Coordinates | null , chosen
 function App() {
   const latRef = useRef<HTMLInputElement>(null);
   const longRef = useRef<HTMLInputElement>(null);
+  const HRRef = useRef<HTMLInputElement>(null);
   const [globeLocation, setLocation] = useState<Coordinates | null>(null);
+  const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
 
-  const chosenStar = bsc5.data[3009]
+  // const chosenStar = bsc5.data[2492]
+  const starDistance = 4
 
-  const handleGetLocation = () => {
+  const handleButtonClick = () => {
+    if (!HRRef.current) return;
+    if (HRRef.current.value.trim() === "") return;
+    if (Number.isNaN(Number(HRRef.current.value))) return;
+    let HRRefNumber: number = Number(HRRef.current.value)
+    if (HRRefNumber < 0 || HRRefNumber > 9109) return
+    if (!Number.isInteger(HRRefNumber)) return
+
     if (!latRef.current || !longRef.current) return;
     if (latRef.current.value.trim() === "" || longRef.current.value.trim() === "") return;
+
+    const currentHRNumber:number = bsc5.data.findIndex(item => item[0] === HRRefNumber)
+    if (currentHRNumber === -1) return
+    setCurrentStarIndex(currentHRNumber)
     let latNum: number = Number(latRef.current.value.trim())
     let longNum: number = Number(longRef.current.value.trim())
-    if(
+
+    if (
       -90 <= latNum &&
       latNum <= 90 &&
       -180 <= longNum &&
-      longNum <= 180) {
-        setLocation({
-          latitude: latNum,
-          longitude: longNum,
-        });
+      longNum <= 180 ) {
+      setLocation({
+        latitude: latNum, longitude: longNum
+      });
     };
   }
 
   return (
     <>
       <section id="main">
-        <input placeholder="Latitude" ref={latRef}></input>
-        <input placeholder="Longitude" ref={longRef}></input>
-        <button type="button" onClick={handleGetLocation}>
-          Show Location on Earth
-        </button>
-
-        <p>
-          {globeLocation
-            ? `Latitude: ${globeLocation.latitude.toFixed(4)}, Longitude: ${globeLocation.longitude.toFixed(4)}`
-            : "Click the button to locate a point on Earth."}
-        </p>
-
-        <Scene location={globeLocation} chosenStar = {chosenStar} />
-
-        <StarDataDisplayer chosenStar = {chosenStar} />
+        <div id="userRegion">
+          Enter your latitude: <input ref={latRef} size={7}></input>
+          <br />
+          Enter your longitude: <input ref={longRef} size={7}></input>
+          <br />
+          Enter star HR number: <input ref={HRRef} size={7}></input>
+          <br />
+          <button type="button" onClick={handleButtonClick}>
+            Show Location on Earth
+          </button>
+        </div>
+        {currentStarIndex && (
+          <Scene location={globeLocation} chosenStar = {bsc5.data[currentStarIndex]} starDistance={starDistance}/>
+        )}
+        {currentStarIndex && (
+          <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} />
+        )}
 
       </section>
     </>
