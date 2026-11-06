@@ -13,7 +13,7 @@ import bsc5Data from "./assets/data/bsc5.json";
 
 const cameraDistance = 6;
 
-async function loadbsc5<T>(path: string): Promise<T> {
+/* async function loadbsc5<T>(path: string): Promise<T> {
   const response = await fetch(path);
 
   if (!response.ok) {
@@ -21,7 +21,7 @@ async function loadbsc5<T>(path: string): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
-/* const bsc5 = await loadbsc5<bsc5Type>("./assets/data/bsc5.json"); */
+const bsc5 = await loadbsc5<bsc5Type>("./assets/data/bsc5.json"); */
 const bsc5: bsc5Type = bsc5Data as bsc5Type;
 
 function CameraAutoMove({location, autoMove, setAutoMove}: {
