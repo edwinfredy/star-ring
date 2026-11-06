@@ -65,7 +65,7 @@ function StarDataDisplayer({chosenStar}: {chosenStar: typeof bsc5['data'][number
   return (
     <div id="dataWindow">
       HR{chosenStar[0]} &nbsp;
-      Name: {chosenStar[1]} &nbsp;
+      Bayer Designation: {chosenStar[1]} &nbsp;
       Right Ascension: {chosenStar[2]} &nbsp;
       Declination: {chosenStar[3]} &nbsp;
       Visual Magnitude: {chosenStar[4]} &nbsp;
@@ -165,7 +165,7 @@ function Scene({ location, chosenStar, starDistance }: {
       {location && chosenStar && (
         <StarRing chosenStar = {chosenStar} location={location} starDistance = {starDistance} />
       )}
-      {chosenStar && (
+      {chosenStar && location && (
         <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST} />
       )}
       {location && chosenStar && (
@@ -218,22 +218,36 @@ function App() {
     <>
       <section id="main">
         <div id="userRegion">
-          Enter your latitude: <input ref={latRef} size={7}></input>
-          <br />
-          Enter your longitude: <input ref={longRef} size={7}></input>
-          <br />
-          Enter star HR number: <input ref={HRRef} size={7}></input>
-          <br />
-          <button type="button" onClick={handleButtonClick}>
-            Show Location on Earth
-          </button>
+          <div className="userLine">
+            <span>Enter your latitude: </span>
+          </div>
+          <div className="userLine">
+          <input ref={latRef} size={7}></input>
+          </div>
+          <div className="userLine">
+            <span>Enter your longitude: </span>
+          </div>
+          <div className="userLine">
+          <input ref={longRef} size={7}></input>
+          </div>
+          <div className="userLine">
+            <span>Enter star HR number: </span>
+          </div>
+          <div className="userLine">
+          <input ref={HRRef} size={7}></input>
+          </div>
+          <div className="userLine">
+            <button type="button" onClick={handleButtonClick}>
+              Track Star
+            </button>
+          </div>
         </div>
         <Scene 
           location={globeLocation} 
           chosenStar = {currentStarIndex ? bsc5.data[currentStarIndex] : null} 
           starDistance={starDistance}
         />
-        {currentStarIndex && (
+        {currentStarIndex && globeLocation && (
           <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} />
         )}
 

@@ -81,6 +81,52 @@ code {
   background: var(--code-bg);
 }
 #main {height: 100vh;}
-#userRegion {position: fixed; top: 0; left: 0; z-index: 1;}
+#userRegion {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  z-index: 1; 
+  width: 25%; 
+  text-align: left; 
+  padding: 20px; 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 0px;
+}
+#userRegion * {padding: 1%;}
 p {margin: 0}
 #dataWindow {position: fixed; bottom: 0; left: 0; z-index: 1;}
+.userLine {margin-bottom: 10px; }
+#userRegion input {border-radius: 10px; color: rgb(204, 204, 204);  border: 1px solid #878787; padding: 7px; outline: none;}
+
+#userRegion input:focus {
+  border-color: rgb(204, 204, 204);
+}
+#userRegion button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #0c0c0c;
+  color: #ededed;
+  cursor: pointer;
+}
+
+#userRegion button:hover {
+  background-color: #191919;
+}
+
+#userRegion button:active {
+  background-color: #000000;
+}
+
+@media (max-width: 600px) {
+  #userRegion {
+    width: 100%;
+    padding-top: 10px;
+    padding-left: 10px;
+  }
+  .userLine {
+    margin-bottom: 5px;
+  }
+
+}
