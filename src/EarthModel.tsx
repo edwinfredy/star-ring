@@ -1,4 +1,3 @@
-
 import earthUrl from "./assets/3d/Earth.glb?url";
 import placeholderUrl from "./assets/3d/Earth_mesh_only.glb?url";
 

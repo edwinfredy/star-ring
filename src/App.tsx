@@ -58,10 +58,7 @@ function CameraAutoMove({location, autoMove, setAutoMove}: {
     camera.position.setFromSpherical(spherical.current);
     camera.lookAt(0, 0, 0);
   })
-  return (
-    <OrbitControls makeDefault onStart={() => {
-    setAutoMove(false)
-  }}/>)
+  return null
 }
 
 function StarDataDisplayer({chosenStar}: {chosenStar: typeof bsc5['data'][number]}) {
@@ -80,7 +77,7 @@ function StarDataDisplayer({chosenStar}: {chosenStar: typeof bsc5['data'][number
 
 function Scene({ location, chosenStar, starDistance }: {
   location: Coordinates | null,
-  chosenStar: typeof bsc5['data'][number],
+  chosenStar: typeof bsc5['data'][number] | null,
   starDistance: number
 }) {
   const globeRef = useRef<Group>(null!)
@@ -158,22 +155,26 @@ function Scene({ location, chosenStar, starDistance }: {
       <color attach="background" args={[/* isDark ?  */"#000000"/*  : "#ffffff" */]} />
       <ambientLight intensity={2} />
       <directionalLight position={[5, 3, 5]} intensity={3} />
+
       <Suspense fallback={null}>
         <EarthModel ref = {globeRef} />
       </Suspense>
       {location && (
         <LocationMarker location={location} />
       )}
-      {location && (
+      {location && chosenStar && (
         <StarRing chosenStar = {chosenStar} location={location} starDistance = {starDistance} />
       )}
-      <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST}/>
-      {location && (
+      {chosenStar && (
+        <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST} />
+      )}
+      {location && chosenStar && (
         <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef} LST={LST}/>
       )}
       {location && (
         <CameraAutoMove location={location} autoMove={autoMove} setAutoMove={setAutoMove}
       />)}
+      <OrbitControls makeDefault onStart={() => {setAutoMove(false) }}/>
 
     </Canvas>
   );
@@ -227,9 +228,11 @@ function App() {
             Show Location on Earth
           </button>
         </div>
-        {currentStarIndex && (
-          <Scene location={globeLocation} chosenStar = {bsc5.data[currentStarIndex]} starDistance={starDistance}/>
-        )}
+        <Scene 
+          location={globeLocation} 
+          chosenStar = {currentStarIndex ? bsc5.data[currentStarIndex] : null} 
+          starDistance={starDistance}
+        />
         {currentStarIndex && (
           <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} />
         )}
