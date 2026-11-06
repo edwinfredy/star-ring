@@ -3,13 +3,15 @@ import {Mesh, MathUtils, PerspectiveCamera} from 'three';
 import { useThree, useFrame } from "@react-three/fiber";
 import type { bsc5Type} from "./types"
 
-function StarDot({chosenStar, starDistance}: {chosenStar: bsc5Type["data"][number], starDistance: number}) {
+function StarDot({chosenStar, starDistance, LST}: {chosenStar: bsc5Type["data"][number], starDistance: number, LST: number}) {
   const markerRef = useRef<Mesh>(null);
   const { camera, size } = useThree();
 
+  const hourAngle = ((LST - chosenStar[2]) % 360 + 360 + 90) % 360;
+
   const radius = starDistance
   const phi = MathUtils.degToRad(chosenStar[3]);
-  const lambda = MathUtils.degToRad(chosenStar[2]);
+  const lambda = MathUtils.degToRad(hourAngle);
 
   const position: [number, number, number] = [
     -radius * Math.cos(phi) * Math.sin(lambda),

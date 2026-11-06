@@ -2,9 +2,15 @@ import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, 
 import {useMemo} from "react";
 import type {Coordinates, bsc5Type} from "./types"
 
-function StarLine({earthPoint, starData, starDistance, globeRef}: {
-    earthPoint: Coordinates, starData: bsc5Type["data"][number], starDistance: number, globeRef: React.RefObject<Mesh | null>
+function StarLine({earthPoint, starData, starDistance, globeRef, LST}: {
+    earthPoint: Coordinates, 
+    starData: bsc5Type["data"][number], 
+    starDistance: number, globeRef: React.RefObject<Mesh | null>, 
+    LST: number
 }) {
+
+  const hourAngle = ((LST - starData[2]) % 360 + 360 + 90) % 360;
+
   const latitudeDegrees = MathUtils.degToRad(earthPoint.latitude);
   const longitudeDegrees = MathUtils.degToRad(earthPoint.longitude);
   const earthPointRadius = 1.02;
@@ -17,7 +23,7 @@ function StarLine({earthPoint, starData, starDistance, globeRef}: {
 
   const starPointRadius = starDistance
   const phi = MathUtils.degToRad(starData[3]);
-  const lambda = MathUtils.degToRad(starData[2]);
+  const lambda = MathUtils.degToRad(hourAngle);
 
   const starPointCoords: [number, number, number] = [
     -starPointRadius * Math.cos(phi) * Math.sin(lambda),
@@ -30,7 +36,6 @@ function StarLine({earthPoint, starData, starDistance, globeRef}: {
   rayCaster.set(new Vector3().fromArray(earthPointCoords), rayDirection)
   if (globeRef.current) {
     intersects = rayCaster.intersectObject(globeRef.current, true)
-    console.log(intersects)
   }
 
   const points = useMemo(() => [

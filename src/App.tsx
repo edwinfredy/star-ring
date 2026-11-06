@@ -83,7 +83,7 @@ function Scene({ location, chosenStar, starDistance }: {
 }) {
   const globeRef = useRef<Mesh>(null!)
   const [autoMove, setAutoMove] = useState(true)
-  const [isDark, setIsDark] = useState(() => 
+/*   const [isDark, setIsDark] = useState(() => 
     window.matchMedia("(prefers-color-scheme: dark)").matches
   );
 
@@ -99,11 +99,62 @@ function Scene({ location, chosenStar, starDistance }: {
     return () => {
       media.removeEventListener("change", updateTheme);
     };
-  }, []);
+  }, []); */
+
+  let LST = 0;
+
+  function calculateLocalSiderealTime() {
+    const date = new Date()
+    let year = date.getUTCFullYear()
+    let month = date.getUTCMonth() + 1;
+    const day = date.getUTCDate();
+    const hour = date.getUTCHours();
+    const minute = date.getUTCMinutes();
+    const second = date.getUTCSeconds();
+    const millisecond = date.getUTCMilliseconds();
+    if (month <= 2) {
+      year--;
+      month += 12
+    }
+    const A = Math.floor(year / 100);
+    const B = 2 - A + Math.floor(A / 4);
+
+    const JD =
+      Math.floor(365.25 * (year + 4716)) +
+      Math.floor(30.6001 * (month + 1)) +
+      day + B - 1524.5 + (
+        hour + minute / 60 +
+        second / 3600 +
+        millisecond / 3600000
+      )
+      / 24;
+
+    const T = (JD - 2451545.0) / 36525;
+    let GMST =
+      280.46061837 +
+      360.98564736629 * (JD - 2451545.0) +
+      0.000387933 * T * T -
+      (T * T * T) / 38710000;
+
+    GMST = ((GMST % 360) + 360) % 360;
+
+    // Local Mean Sidereal Time
+    LST = ((GMST + location!.longitude) % 360 + 360) % 360;
+
+    // Convert degrees to sidereal time
+    const totalSeconds = LST * 240;
+
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    console.log({JD,GMST,LST,hours: h,minutes: m,seconds: s,formatted:`${h}h ${m}m ${s.toFixed(3)}s`})
+  }
+
+  if (location) calculateLocalSiderealTime()
 
   return (
     <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }}>
-      <color attach="background" args={[isDark ? "#000000" : "#ffffff"]} />
+      <color attach="background" args={[/* isDark ?  */"#000000"/*  : "#ffffff" */]} />
       <ambientLight intensity={2} />
       <directionalLight position={[5, 3, 5]} intensity={3} />
       <Suspense fallback={null}>
@@ -115,9 +166,9 @@ function Scene({ location, chosenStar, starDistance }: {
       {location && (
         <StarRing chosenStar = {chosenStar} location={location} starDistance = {starDistance} />
       )}
-      <StarDot chosenStar = {chosenStar} starDistance = {starDistance}/>
+      <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST}/>
       {location && (
-        <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef}/>
+        <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef} LST={LST}/>
       )}
       {location && (
         <CameraAutoMove location={location} autoMove={autoMove} setAutoMove={setAutoMove}
@@ -128,14 +179,12 @@ function Scene({ location, chosenStar, starDistance }: {
 }
 
 function App() {
+  const starDistance = 4
   const latRef = useRef<HTMLInputElement>(null);
   const longRef = useRef<HTMLInputElement>(null);
   const HRRef = useRef<HTMLInputElement>(null);
   const [globeLocation, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
-
-  // const chosenStar = bsc5.data[2492]
-  const starDistance = 4
 
   const handleButtonClick = () => {
     if (!HRRef.current) return;
@@ -159,9 +208,7 @@ function App() {
       latNum <= 90 &&
       -180 <= longNum &&
       longNum <= 180 ) {
-      setLocation({
-        latitude: latNum, longitude: longNum
-      });
+      setLocation({ latitude: latNum, longitude: longNum });
     };
   }
 
