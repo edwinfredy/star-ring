@@ -4,12 +4,13 @@ import { OrbitControls } from "@react-three/drei";
 import { Group, Spherical, MathUtils} from "three";
 import './App.css'
 import StarLine from './StarLine';
-import type {Coordinates, bsc5Type} from './types'
+import type {Coordinates, bsc5Type, citiesType} from './types'
 import EarthModel from './EarthModel';
 import StarDot from './StarDot';
 import StarRing from './StarRing';
 import LocationMarker from './LocationMarker';
 import bsc5Data from "./assets/data/bsc5.json";
+import cities from "./assets/data/cities.json";
 
 const cameraDistance = 6;
 
@@ -22,6 +23,9 @@ const cameraDistance = 6;
   return response.json() as Promise<T>;
 }
 const bsc5 = await loadbsc5<bsc5Type>("./assets/data/bsc5.json"); */
+
+const citiesList: citiesType = cities as citiesType;
+
 const bsc5: bsc5Type = bsc5Data as bsc5Type;
 
 function CameraAutoMove({location, autoMove, setAutoMove}: {
@@ -82,27 +86,11 @@ function Scene({ location, chosenStar, starDistance }: {
 }) {
   const globeRef = useRef<Group>(null!)
   const [autoMove, setAutoMove] = useState(true)
-/*   const [isDark, setIsDark] = useState(() => 
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const updateTheme = (event: MediaQueryListEvent) => {
-      setIsDark(event.matches);
-    };
-
-    media.addEventListener("change", updateTheme);
-
-    return () => {
-      media.removeEventListener("change", updateTheme);
-    };
-  }, []); */
-
-  let LST = 0;
+  let LST: number = 0;
 
   function calculateLocalSiderealTime() {
+    if (!location) return;
     const date = new Date()
     let year = date.getUTCFullYear()
     let month = date.getUTCMonth() + 1;
@@ -129,14 +117,13 @@ function Scene({ location, chosenStar, starDistance }: {
       / 24;
 
     const T = (JD - 2451545.0) / 36525;
-    let GMST =
+    let GMST: number =
       280.46061837 +
       360.98564736629 * (JD - 2451545.0) +
       0.000387933 * T * T -
       (T * T * T) / 38710000;
 
     GMST = ((GMST % 360) + 360) % 360;
-
     // Local Mean Sidereal Time
     LST = ((GMST + location!.longitude) % 360 + 360) % 360;
 
@@ -169,7 +156,7 @@ function Scene({ location, chosenStar, starDistance }: {
         <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST} />
       )}
       {location && chosenStar && (
-        <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef} LST={LST}/>
+        <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef} LST={LST} />
       )}
       {location && (
         <CameraAutoMove location={location} autoMove={autoMove} setAutoMove={setAutoMove}
@@ -185,6 +172,7 @@ function App() {
   const latRef = useRef<HTMLInputElement>(null);
   const longRef = useRef<HTMLInputElement>(null);
   const HRRef = useRef<HTMLInputElement>(null);
+  const cityRef = useRef<HTMLInputElement>(null);
   const [globeLocation, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
 
@@ -214,27 +202,47 @@ function App() {
     };
   }
 
+  function handleCityChange(typedContent: string) {
+    const selectedCity = citiesList.find((row) => row[0] === typedContent)
+    if (selectedCity) {
+      setLocation({latitude: Number(selectedCity[1]), longitude: Number(selectedCity[2])})
+      latRef.current!.value = selectedCity[1].toString()
+      longRef.current!.value = selectedCity[2].toString()
+    }
+  }
+
   return (
     <>
       <section id="main">
         <div id="userRegion">
           <div className="userLine">
+            <span>Type a nearby city: </span>
+          </div>
+          <div className="userLine">
+            <input type="text" list="cities-list" ref={cityRef} size={12} onChange={(e) => handleCityChange(e.target.value)}></input>
+          </div>
+          <datalist id="cities-list">
+            {citiesList.map((row, index) => (
+              <option key={index} value={row[0]} />
+            ))}
+          </datalist>
+          <div className="userLine">
             <span>Enter your latitude: </span>
           </div>
           <div className="userLine">
-          <input ref={latRef} size={7}></input>
+            <input ref={latRef} size={7} onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}></input>&deg;
           </div>
           <div className="userLine">
             <span>Enter your longitude: </span>
           </div>
           <div className="userLine">
-          <input ref={longRef} size={7}></input>
+            <input ref={longRef} size={7} onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}></input>&deg;
           </div>
           <div className="userLine">
             <span>Enter star HR number: </span>
           </div>
           <div className="userLine">
-          <input ref={HRRef} size={7}></input>
+            <input ref={HRRef} size={7}></input>
           </div>
           <div className="userLine">
             <button type="button" onClick={handleButtonClick}>
