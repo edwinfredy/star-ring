@@ -143,13 +143,12 @@ function Scene({ location, chosenStar, starDistance }: {
     // Local Mean Sidereal Time
     LST = ((GMST + location!.longitude) % 360 + 360) % 360;
 
-    // Convert degrees to sidereal time
+/*     // Convert degrees to sidereal time
     const totalSeconds = LST * 240;
 
     const h = Math.floor(totalSeconds / 3600);
     const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
-    console.log({JD,GMST,LST,hours: h,minutes: m,seconds: s,formatted:`${h}h ${m}m ${s.toFixed(3)}s`})
+    const s = totalSeconds % 60; */
   }
 
   if (location) calculateLocalSiderealTime()
