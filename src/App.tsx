@@ -246,7 +246,7 @@ function App() {
           </div>
           <div className="userLine">
             <button type="button" onClick={handleButtonClick}>
-              Track Star
+              Go
             </button>
           </div>
         </div>
