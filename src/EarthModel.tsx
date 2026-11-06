@@ -1,46 +1,85 @@
+
 import earthUrl from "./assets/3d/Earth.glb?url";
-import { useMemo, forwardRef} from 'react'
+import placeholderUrl from "./assets/3d/Earth_mesh_only.glb?url";
+
+import { useMemo, useEffect, useState, forwardRef } from "react";
 import { useGLTF } from "@react-three/drei";
-import { Box3, Vector3, Mesh } from "three";
+import {
+  Box3,
+  Vector3,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+} from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-const EarthModel = forwardRef<Mesh>((_, ref) => {
-  const { scene } = useGLTF(earthUrl);
+const EarthModel = forwardRef<Group>((_, ref) => {
+  // Load the lightweight geometry first.
+  const { scene: placeholderScene } = useGLTF(placeholderUrl);
 
+  // Store the full model once it has loaded.
+  const [fullScene, setFullScene] = useState<Group | null>(null);
+
+  useEffect(() => {
+    const loader = new GLTFLoader();
+    let active = true;
+
+    loader.load(
+      earthUrl,
+      (gltf) => {
+        if (active) {
+          setFullScene(gltf.scene);
+        }
+      },
+      undefined,
+      (error) => {
+        console.error("Failed to load Earth GLB:", error);
+      }
+    );
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Use the placeholder until the full model is ready.
   const model = useMemo(() => {
-    const clone = scene.clone(true);
+    const isPlaceholder = !fullScene;
+    const source = fullScene ?? placeholderScene;
 
-    // Calculate the model's bounding box
+    const clone = source.clone(true);
+
+    // Give the placeholder a simple, untextured material.
+    if (isPlaceholder) {
+      clone.traverse((object) => {
+        if ((object as Mesh).isMesh) {
+          (object as Mesh).material = new MeshStandardMaterial({
+            color: "#888888",
+            roughness: 1,
+          });
+        }
+      });
+    }
+
+    // Normalize both models to exactly the same dimensions.
     const bounds = new Box3().setFromObject(clone);
     const size = bounds.getSize(new Vector3());
     const center = bounds.getCenter(new Vector3());
     const maxDimension = Math.max(size.x, size.y, size.z);
 
     if (maxDimension > 0) {
-      clone.scale.setScalar(2 / maxDimension);
+      const scale = 2 / maxDimension;
+
+      clone.scale.setScalar(scale);
+      clone.position.copy(center).multiplyScalar(-scale);
     }
-    // Center the model after scaling
-    clone.position.copy(center).multiplyScalar(-2 / maxDimension);
-
-    /*if (location !== null) {
-      const phi = (90 - location.latitude) * (Math.PI / 180);
-      const theta = (location.longitude + 180) * (Math.PI / 180);
-      const x = -Math.sin(phi) * Math.cos(theta);
-      const y = Math.cos(phi);
-      const z = Math.sin(phi) * Math.sin(theta);
-      clone.rotation.set(x, y, z);
-    } */
-
-    //  console.log("Model dimensions:", size);
-    // console.log("Model center:", center);
 
     return clone;
-  }, [scene]);
+  }, [fullScene, placeholderScene]);
 
-  return (
-    <mesh ref={ref}>
-        <primitive object={model} />;
-    </mesh>
-  )
-})
+  return <primitive object={model} ref={ref} />;
+});
 
-export default EarthModel
+EarthModel.displayName = "EarthModel";
+
+export default EarthModel;

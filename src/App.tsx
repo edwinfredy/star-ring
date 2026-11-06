@@ -1,7 +1,7 @@
 import { useState, Suspense, useEffect, useRef} from 'react'
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { Mesh, Spherical, MathUtils} from "three";
+import { Group, Spherical, MathUtils} from "three";
 import './App.css'
 import StarLine from './StarLine';
 import type {Coordinates, bsc5Type} from './types'
@@ -83,7 +83,7 @@ function Scene({ location, chosenStar, starDistance }: {
   chosenStar: typeof bsc5['data'][number],
   starDistance: number
 }) {
-  const globeRef = useRef<Mesh>(null!)
+  const globeRef = useRef<Group>(null!)
   const [autoMove, setAutoMove] = useState(true)
 /*   const [isDark, setIsDark] = useState(() => 
     window.matchMedia("(prefers-color-scheme: dark)").matches

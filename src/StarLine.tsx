@@ -1,11 +1,11 @@
-import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, Mesh} from "three";
+import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, Group} from "three";
 import {useMemo} from "react";
 import type {Coordinates, bsc5Type} from "./types"
 
 function StarLine({earthPoint, starData, starDistance, globeRef, LST}: {
     earthPoint: Coordinates, 
     starData: bsc5Type["data"][number], 
-    starDistance: number, globeRef: React.RefObject<Mesh | null>, 
+    starDistance: number, globeRef: React.RefObject<Group | null>, 
     LST: number
 }) {
 
