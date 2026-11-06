@@ -20,7 +20,7 @@ async function loadbsc5<T>(path: string): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
-const bsc5 = await loadbsc5<bsc5Type>("./src/assets/data/bsc5.json");
+const bsc5 = await loadbsc5<bsc5Type>("./assets/data/bsc5.json");
 
 function CameraAutoMove({location, autoMove, setAutoMove}: {
   location: Coordinates,
