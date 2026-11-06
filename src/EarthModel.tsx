@@ -53,7 +53,7 @@ const EarthModel = forwardRef<Group>((_, ref) => {
       clone.traverse((object) => {
         if ((object as Mesh).isMesh) {
           (object as Mesh).material = new MeshStandardMaterial({
-            color: "#888888",
+            color: "#65aec6",
             roughness: 1,
           });
         }
