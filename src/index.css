@@ -93,10 +93,10 @@ code {
   grid-template-columns: 1fr 1fr; 
   gap: 0px;
 }
-#userRegion * {padding: 1%;}
+/* #userRegion * {padding: 1%;} */
 p {margin: 0}
 #dataWindow {position: fixed; bottom: 0; left: 0; z-index: 1;}
-.userLine {margin-bottom: 10px; }
+.userLine {margin-bottom: 5px; }
 #userRegion input {
   background-color: black;
   border-radius: 10px; 

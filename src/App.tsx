@@ -130,7 +130,12 @@ function Scene({ location, chosenStar, starDistance }: {
   if (location) calculateLocalSiderealTime()
 
   return (
-    <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }} frameloop="demand">
+    <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }} frameloop="demand"  style={{
+      userSelect: "none",
+      WebkitUserSelect: "none",
+      WebkitTouchCallout: "none",
+      touchAction: "none",
+    }}>
       <color attach="background" args={["#000000"]} />
       <ambientLight intensity={2} />
       <directionalLight position={[5, 3, 5]} intensity={3} />
