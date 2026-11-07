@@ -131,7 +131,7 @@ function Scene({ location, chosenStar, starDistance }: {
 
   return (
     <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }} frameloop="demand">
-      <color attach="background" args={[/* isDark ?  */"#000000"/*  : "#ffffff" */]} />
+      <color attach="background" args={["#000000"]} />
       <ambientLight intensity={2} />
       <directionalLight position={[5, 3, 5]} intensity={3} />
 
@@ -157,15 +157,16 @@ function Scene({ location, chosenStar, starDistance }: {
       )}
       <OrbitControls makeDefault onStart={() => {setAutoMove(false) }}/>
 
-      <EffectComposer>
-        <SelectiveBloom 
+{/*       <EffectComposer>
+        <SelectiveBloom
           lights={[]} 
           selection={bloomComponents} 
-          intensity={1} luminanceThreshold={0.1} 
-          luminanceSmoothing={0.4} 
+          intensity={1} luminanceThreshold={0.7} 
+          luminanceSmoothing={0.1} 
           mipmapBlur={false}
+          radius={0.3}
         />
-      </EffectComposer>
+      </EffectComposer> */}
 
     </Canvas>
   );
@@ -177,8 +178,9 @@ function App() {
   const longRef = useRef<HTMLInputElement>(null);
   const HRRef = useRef<HTMLInputElement>(null);
   const cityRef = useRef<HTMLInputElement>(null);
-  const [globeLocation, setLocation] = useState<Coordinates | null>(null);
+  const [location, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
+  const [locationAvailable, setLocationAvailable] = useState<number>(0);
 
   const handleButtonClick = () => {
     if (!HRRef.current) return;
@@ -210,10 +212,25 @@ function App() {
     const selectedCity = citiesList.find((row) => row[0] === typedContent)
     if (selectedCity) {
       setLocation({latitude: Number(selectedCity[1]), longitude: Number(selectedCity[2])})
-      latRef.current!.value = selectedCity[1].toString()
-      longRef.current!.value = selectedCity[2].toString()
+/*       latRef.current!.value = selectedCity[1].toString()
+      longRef.current!.value = selectedCity[2].toString() */
     }
   }
+
+    function handleLocationButtonClick() {
+      if (!navigator.geolocation) {
+        setLocationAvailable(2) // Location access fail
+        return;
+      }
+    navigator.geolocation.getCurrentPosition((position) => {
+      setLocation({
+        latitude: Number(position.coords.latitude.toFixed(5)),
+        longitude: Number(position.coords.longitude.toFixed(5))
+      })
+      if (cityRef.current)cityRef.current.value = ""
+    },
+    () => setLocationAvailable(2)
+    )}
 
   return (
     <>
@@ -222,7 +239,7 @@ function App() {
           <div className="userLine">
             <span>Type a nearby city: </span>
           </div>
-          <div className="userLine">
+          <div className="userLine">  
             <input type="text" list="cities-list" ref={cityRef} size={12} onChange={(e) => handleCityChange(e.target.value)}></input>
           </div>
           <datalist id="cities-list">
@@ -230,22 +247,45 @@ function App() {
               <option key={index} value={row[0]} />
             ))}
           </datalist>
+          <div className="userLine fullLine">
+            <span>OR</span>
+          </div>
           <div className="userLine">
             <span>Enter your latitude: </span>
           </div>
           <div className="userLine">
-            <input ref={latRef} size={7} onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}></input>&deg;
+            <input 
+              value={location?.latitude ?? ""} 
+              ref={latRef} 
+              size={7} 
+              onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}>
+            </input>
+            &deg;
           </div>
           <div className="userLine">
             <span>Enter your longitude: </span>
           </div>
           <div className="userLine">
-            <input ref={longRef} size={7} onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}></input>&deg;
+            <input 
+              value={location?.longitude ?? ""}
+              ref={longRef} 
+              size={7} 
+              onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}>
+            </input>
+            &deg;
           </div>
-          <div className="userLine">
+          <div className="userLine fullLine">
+            <span>OR</span>
+          </div>
+          <div className="userLine fullLine locationButton">
+            <button type="button" onClick={handleLocationButtonClick}>
+              Detect Location
+            </button>
+          </div>
+          <div className="userLine topLine">
             <span>Enter star HR number: </span>
           </div>
-          <div className="userLine">
+          <div className="userLine topLine">
             <input ref={HRRef} size={7}></input>
           </div>
           <div className="userLine">
@@ -255,11 +295,11 @@ function App() {
           </div>
         </div>
         <Scene 
-          location={globeLocation} 
+          location={location} 
           chosenStar = {currentStarIndex ? bsc5.data[currentStarIndex] : null} 
           starDistance={starDistance}
         />
-        {currentStarIndex && globeLocation && (
+        {currentStarIndex && location && (
           <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} />
         )}
 

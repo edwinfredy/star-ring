@@ -135,5 +135,11 @@ p {margin: 0}
   .userLine {
     margin-bottom: 5px;
   }
-
+}
+.fullLine {grid-column: span 2;
+  text-align: center;
+}
+.topLine {
+  border-top: solid 1px rgb(167, 167, 167);
+  padding-top: 10px !important;
 }
