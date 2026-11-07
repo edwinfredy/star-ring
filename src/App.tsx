@@ -15,16 +15,6 @@ import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing";
 
 const cameraDistance = 6;
 
-/* async function loadbsc5<T>(path: string): Promise<T> {
-  const response = await fetch(path);
-
-  if (!response.ok) {
-    throw new Error(`Failed to load JSON: ${response.status}`);
-  }
-  return response.json() as Promise<T>;
-}
-const bsc5 = await loadbsc5<bsc5Type>("./assets/data/bsc5.json"); */
-
 const citiesList: citiesType = cities as citiesType;
 
 const bsc5: bsc5Type = bsc5Data as bsc5Type;
