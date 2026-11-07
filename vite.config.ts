@@ -4,5 +4,9 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/star-ring/'
+  base: '/star-ring/',
+  server: {
+    host: '0.0.0.0',
+    port: 5123
+  }
 })
