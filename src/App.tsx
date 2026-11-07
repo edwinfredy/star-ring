@@ -162,8 +162,8 @@ function Scene({ location, chosenStar, starDistance }: {
           lights={[]} 
           selection={bloomComponents} 
           intensity={1} luminanceThreshold={0.1} 
-          luminanceSmoothing={0.9} 
-          mipmapBlur
+          luminanceSmoothing={0.4} 
+          mipmapBlur={false}
         />
       </EffectComposer>
 
