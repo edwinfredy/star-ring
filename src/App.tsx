@@ -11,7 +11,7 @@ import StarRing from './StarRing';
 import LocationMarker from './LocationMarker';
 import bsc5Data from "./assets/data/bsc5.json";
 import cities from "./assets/data/cities.json";
-import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing";
+/* import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing"; */
 
 const cameraDistance = 6;
 
@@ -180,7 +180,7 @@ function App() {
   const cityRef = useRef<HTMLInputElement>(null);
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
-  const [locationAvailable, setLocationAvailable] = useState<number>(0);
+/*   const [locationAvailable, setLocationAvailable] = useState<number>(0); */
 
   const handleButtonClick = () => {
     if (!HRRef.current) return;
@@ -219,7 +219,7 @@ function App() {
 
     function handleLocationButtonClick() {
       if (!navigator.geolocation) {
-        setLocationAvailable(2) // Location access fail
+        //setLocationAvailable(2) // Location access fail
         return;
       }
     navigator.geolocation.getCurrentPosition((position) => {
@@ -229,7 +229,7 @@ function App() {
       })
       if (cityRef.current)cityRef.current.value = ""
     },
-    () => setLocationAvailable(2)
+    () => {/* setLocationAvailable(2) */}
     )}
 
   return (
