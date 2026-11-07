@@ -11,6 +11,7 @@ import StarRing from './StarRing';
 import LocationMarker from './LocationMarker';
 import bsc5Data from "./assets/data/bsc5.json";
 import cities from "./assets/data/cities.json";
+import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing";
 
 const cameraDistance = 6;
 
@@ -85,6 +86,7 @@ function Scene({ location, chosenStar, starDistance }: {
   starDistance: number
 }) {
   const globeRef = useRef<Group>(null!)
+  const bloomComponents = useRef<Group>(null!)
   const [autoMove, setAutoMove] = useState(true)
 
   let LST: number = 0;
@@ -138,7 +140,7 @@ function Scene({ location, chosenStar, starDistance }: {
   if (location) calculateLocalSiderealTime()
 
   return (
-    <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }}>
+    <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }} frameloop="demand">
       <color attach="background" args={[/* isDark ?  */"#000000"/*  : "#ffffff" */]} />
       <ambientLight intensity={2} />
       <directionalLight position={[5, 3, 5]} intensity={3} />
@@ -152,16 +154,28 @@ function Scene({ location, chosenStar, starDistance }: {
       {location && chosenStar && (
         <StarRing chosenStar = {chosenStar} location={location} starDistance = {starDistance} />
       )}
-      {chosenStar && location && (
-        <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST} />
-      )}
-      {location && chosenStar && (
-        <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef} LST={LST} />
-      )}
+      <group ref={bloomComponents}>
+        {chosenStar && location && (
+          <StarDot chosenStar = {chosenStar} starDistance = {starDistance} LST={LST} />
+        )}
+        {location && chosenStar && (
+          <StarLine earthPoint={location} starData={chosenStar} starDistance={starDistance} globeRef={globeRef} LST={LST} />
+        )}
+      </group>
       {location && (
-        <CameraAutoMove location={location} autoMove={autoMove} setAutoMove={setAutoMove}
-      />)}
+        <CameraAutoMove location={location} autoMove={autoMove} setAutoMove={setAutoMove} />
+      )}
       <OrbitControls makeDefault onStart={() => {setAutoMove(false) }}/>
+
+      <EffectComposer>
+        <SelectiveBloom 
+          lights={[]} 
+          selection={bloomComponents} 
+          intensity={1} luminanceThreshold={0.1} 
+          luminanceSmoothing={0.9} 
+          mipmapBlur
+        />
+      </EffectComposer>
 
     </Canvas>
   );
@@ -197,7 +211,7 @@ function App() {
       -90 <= latNum &&
       latNum <= 90 &&
       -180 <= longNum &&
-      longNum <= 180 ) {
+      longNum <= 180) {
       setLocation({ latitude: latNum, longitude: longNum });
     };
   }

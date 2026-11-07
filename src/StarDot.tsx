@@ -1,6 +1,7 @@
 import {useRef} from 'react';
-import {Mesh, MathUtils, PerspectiveCamera} from 'three';
+import {Mesh, MathUtils, PerspectiveCamera, Color} from 'three';
 import { useThree, useFrame } from "@react-three/fiber";
+import { Select } from "@react-three/postprocessing";
 import type { bsc5Type} from "./types"
 
 function StarDot({chosenStar, starDistance, LST}: {chosenStar: bsc5Type["data"][number], starDistance: number, LST: number}) {
@@ -34,10 +35,12 @@ function StarDot({chosenStar, starDistance, LST}: {chosenStar: bsc5Type["data"][
   });
 
   return (
-    <mesh ref={markerRef} position={position}>
-      <sphereGeometry args={[0.025, 16, 16]} />
-      <meshBasicMaterial color="white" depthTest={true} />
-    </mesh>
+    <Select enabled>
+      <mesh ref={markerRef} position={position}>
+        <sphereGeometry args={[0.025, 16, 16]} />
+        <meshBasicMaterial color={new Color(3, 3, 3)} toneMapped={false} depthTest={true} />
+      </mesh>
+    </Select>
   );
 }
 

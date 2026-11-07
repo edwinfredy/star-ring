@@ -1,6 +1,7 @@
-import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, Group} from "three";
+import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, Group, Color} from "three";
 import {useMemo} from "react";
 import type {Coordinates, bsc5Type} from "./types"
+import { Select } from "@react-three/postprocessing";
 
 function StarLine({earthPoint, starData, starDistance, globeRef, LST}: {
     earthPoint: Coordinates, 
@@ -44,8 +45,11 @@ function StarLine({earthPoint, starData, starDistance, globeRef, LST}: {
   ], [earthPoint, starData])
   const geometry = useMemo(() => new BufferGeometry().setFromPoints(points), [points])
   return (
-    intersects.length === 0 &&
-        <primitive object={new Line(geometry, new LineBasicMaterial({ color: 'white' }))} />
+    intersects.length === 0 && (
+      <Select enabled>
+        <primitive object={new Line(geometry, new LineBasicMaterial({ color: new Color(3, 3, 3), toneMapped: false}))} />
+      </Select>
+    )
   )
 }
 
