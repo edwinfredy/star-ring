@@ -34,7 +34,6 @@ function CameraAutoMove({location, autoMove, setAutoMove}: {
   }, [location.latitude, location.longitude])
 
   useFrame((_, delta) => {
-
     if (!autoMove) return;
     spherical.current.theta = MathUtils.damp(
       spherical.current.theta,
@@ -217,8 +216,8 @@ function App() {
     const selectedCity = citiesList.find((row) => row[0] === typedContent)
     if (selectedCity) {
       setLocation({latitude: selectedCity[1], longitude: selectedCity[2]})
-/*       latRef.current!.value = selectedCity[1].toString()
-      longRef.current!.value = selectedCity[2].toString() */
+    } else {
+      setLocation(null)
     }
   }
 
@@ -249,7 +248,7 @@ function App() {
           </div>
           <datalist id="cities-list">
             {citiesList.map((row, index) => (
-              <option key={index} value={(row[0])} />
+              <option key={index} value={row[0]} />
             ))}
           </datalist>
           <div className="userLine fullLine">
