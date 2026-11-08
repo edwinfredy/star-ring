@@ -216,7 +216,7 @@ function App() {
   function handleCityChange(typedContent: string) {
     const selectedCity = citiesList.find((row) => row[0] === typedContent)
     if (selectedCity) {
-      setLocation({latitude: Number(selectedCity[1]), longitude: Number(selectedCity[2])})
+      setLocation({latitude: selectedCity[1], longitude: selectedCity[2]})
 /*       latRef.current!.value = selectedCity[1].toString()
       longRef.current!.value = selectedCity[2].toString() */
     }
@@ -249,7 +249,7 @@ function App() {
           </div>
           <datalist id="cities-list">
             {citiesList.map((row, index) => (
-              <option key={index} value={row[0]} />
+              <option key={index} value={(row[0])} />
             ))}
           </datalist>
           <div className="userLine fullLine">
