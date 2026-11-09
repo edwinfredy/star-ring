@@ -1,6 +1,6 @@
 import { useState, useRef} from 'react'
 import './App.css'
-import {type boxValuestype, type Coordinates, type bsc5Type, type citiesType} from './types'
+import {type boxValuesType, type Coordinates, type bsc5Type, type citiesType} from './types'
 import bsc5Data from "./assets/data/bsc5.json";
 import cities from "./assets/data/cities.json";
 import Scene from './Scene';
@@ -37,7 +37,7 @@ function App() {
 /*   const [longitudeInput, setLongitudeInput] = useState(
       String(location?.longitude ?? "")
   ); */
-  const [boxValues, setBoxValues] = useState<boxValuestype>({
+  const [boxValues, setBoxValues] = useState<boxValuesType>({
     cityBox: "", latitudeBox: "", longitudeBox: "", starBox: ""
   });
 
@@ -177,8 +177,14 @@ function App() {
             <span>Enter star HR number or name: </span>
           </div>
           <div className="userLine topLine">
-            <input ref={starInputRef} size={10}></input>
+            <input ref={starInputRef} size={10} list="starNamesList"></input>
           </div>
+          <datalist id="starNamesList">
+            {bsc5.data.map((row, index) => (
+              row[7] !== null && (
+              <option key={index} value={row[7]} />
+            )))}
+          </datalist>
           <div className="userLine">
             <button type="button" onClick={handleGoButtonClick} style={{
               userSelect: "none",
@@ -190,7 +196,7 @@ function App() {
             </button>
           </div>
         </div>
-        <Scene 
+        <Scene
           location={location} 
           chosenStar = {currentStarIndex ? bsc5.data[currentStarIndex] : null} 
           starDistance={starDistance}
