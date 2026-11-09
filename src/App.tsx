@@ -4,7 +4,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Group, Spherical, MathUtils} from "three";
 import './App.css'
 import StarLine from './StarLine';
-import type {Coordinates, bsc5Type, citiesType} from './types'
+import {type boxValuestype, type Coordinates, type bsc5Type, type citiesType} from './types'
 import EarthModel from './EarthModel';
 import StarDot from './StarDot';
 import StarRing from './StarRing';
@@ -186,10 +186,19 @@ function App() {
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
 /*   const [locationAvailable, setLocationAvailable] = useState<number>(0); */
+/*   const [longitudeInput, setLongitudeInput] = useState(
+      String(location?.longitude ?? "")
+  ); */
+  const [boxValues, setBoxValues] = useState<boxValuestype>({
+    cityBox: "", latitudeBox: "", longitudeBox: "", starBox: ""
+  });
 
-  const handleButtonClick = () => {
-    if (!latRef.current || !longRef.current) return;
-    if (latRef.current.value.trim() === "" || longRef.current.value.trim() === "") return;
+  const handleGoButtonClick = () => {
+    // Checking lat and long validity
+    if (!latRef.current) return;
+    if (latRef.current.value.trim() === "" || boxValues.longitudeBox.trim() === "") return;
+    if (Number.isNaN(Number(latRef.current.value.trim())) || (Number.isNaN(Number(boxValues.longitudeBox.trim())))) return;
+
     if (!starInputRef.current) return;
     if (starInputRef.current.value.trim() === "") return;
     if (Number.isNaN(Number(starInputRef.current.value))) {
@@ -208,7 +217,7 @@ function App() {
       setCurrentStarIndex(currentHRNumber)
     }
     let latNum: number = Number(latRef.current.value.trim())
-    let longNum: number = Number(longRef.current.value.trim())
+    let longNum: number = Number(boxValues.longitudeBox.trim())
 
     if (
       -90 <= latNum &&
@@ -222,9 +231,14 @@ function App() {
   function handleCityChange(typedContent: string) {
     const selectedCity = citiesList.find((row) => row[0] === typedContent)
     if (selectedCity) {
-      setLocation({latitude: selectedCity[1], longitude: selectedCity[2]})
-    } else {
-      setLocation(null)
+/*       setLocation({latitude: selectedCity[1], longitude: selectedCity[2]}) */
+      setBoxValues((prev) => {
+        return ({
+          ...prev,
+          longitudeBox: selectedCity[2].toString(),
+          latitudeBox: selectedCity[1].toString()
+        })
+      })
     }
   }
 
@@ -250,8 +264,14 @@ function App() {
           <div className="userLine">
             <span>Type a nearby city: </span>
           </div>
-          <div className="userLine">  
-            <input type="text" list="cities-list" ref={cityRef} size={12} onChange={(e) => handleCityChange(e.target.value)}></input>
+          <div className="userLine">
+            <input 
+              type="text" 
+              list="cities-list" 
+              ref={cityRef} 
+              size={12} 
+              onChange={(e) => handleCityChange(e.target.value)} 
+            />
           </div>
           <datalist id="cities-list">
             {citiesList.map((row, index) => (
@@ -265,25 +285,36 @@ function App() {
             <span>Enter your latitude: </span>
           </div>
           <div className="userLine">
-            <input 
-              value={location?.latitude ?? ""} 
-              ref={latRef} 
-              size={7} 
-              onChange = {() => {if (cityRef.current) cityRef.current.value = ""}}>
-            </input>
+            <input
+              type="text"
+              value={boxValues.latitudeBox}
+              ref={latRef}
+              size={7}
+              onChange={(e) => {setBoxValues((prev) => {
+                return ({
+                  ...prev,
+                  latitudeBox: e.target.value
+                })
+              })}}
+            />
             &deg;
           </div>
           <div className="userLine">
             <span>Enter your longitude: </span>
           </div>
           <div className="userLine">
-            <input 
-              value={location?.longitude ?? ""}
-              ref={longRef} 
-              size={7} 
-              onChange = {() => {
-                if (cityRef.current) cityRef.current.value = ""}}>
-            </input>
+            <input
+              type="text"
+              value={boxValues.longitudeBox}
+              ref={longRef}
+              size={7}
+              onChange={(e) => {setBoxValues((prev) => {
+                return ({
+                  ...prev,
+                  longitudeBox: e.target.value
+                })
+              })}}
+            />
             &deg;
           </div>
           <div className="userLine fullLine">
@@ -301,7 +332,12 @@ function App() {
             <input ref={starInputRef} size={10}></input>
           </div>
           <div className="userLine">
-            <button type="button" onClick={handleButtonClick}>
+            <button type="button" onClick={handleGoButtonClick} style={{
+              userSelect: "none",
+              WebkitUserSelect: "none",
+              WebkitTouchCallout: "none",
+              touchAction: "none",
+            }}>
               Go
             </button>
           </div>
