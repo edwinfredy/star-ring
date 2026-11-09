@@ -64,7 +64,8 @@ function StarDataDisplayer({chosenStar}: {chosenStar: typeof bsc5['data'][number
       Declination: {chosenStar[3]} &nbsp;
       Visual Magnitude: {chosenStar[4]} &nbsp;
       Multiple System: {chosenStar[5]} &nbsp;
-      Class: {chosenStar[6]}
+      Class: {chosenStar[6]} &nbsp;
+      Name: {chosenStar[7]}
     </div>
   )
 }
@@ -180,26 +181,32 @@ function App() {
   const starDistance = 4
   const latRef = useRef<HTMLInputElement>(null);
   const longRef = useRef<HTMLInputElement>(null);
-  const HRRef = useRef<HTMLInputElement>(null);
+  const starInputRef = useRef<HTMLInputElement>(null);
   const cityRef = useRef<HTMLInputElement>(null);
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
 /*   const [locationAvailable, setLocationAvailable] = useState<number>(0); */
 
   const handleButtonClick = () => {
-    if (!HRRef.current) return;
-    if (HRRef.current.value.trim() === "") return;
-    if (Number.isNaN(Number(HRRef.current.value))) return;
-    let HRRefNumber: number = Number(HRRef.current.value)
-    if (HRRefNumber < 0 || HRRefNumber > 9109) return
-    if (!Number.isInteger(HRRefNumber)) return
-
     if (!latRef.current || !longRef.current) return;
     if (latRef.current.value.trim() === "" || longRef.current.value.trim() === "") return;
+    if (!starInputRef.current) return;
+    if (starInputRef.current.value.trim() === "") return;
+    if (Number.isNaN(Number(starInputRef.current.value))) {
+      let HRRefContent: string = starInputRef.current.value.trim()
+      const nameMatchedIndex:number = bsc5.data.findIndex(item => item[7]?.toLowerCase() === HRRefContent.toLowerCase())
+      if (nameMatchedIndex === -1) return;
+      setCurrentStarIndex(nameMatchedIndex)
+    }
+    else {
+      let HRRefNumber: number = Number(starInputRef.current.value)
+      if (HRRefNumber < 0 || HRRefNumber > 9109) return
+      if (!Number.isInteger(HRRefNumber)) return
 
-    const currentHRNumber:number = bsc5.data.findIndex(item => item[0] === HRRefNumber)
-    if (currentHRNumber === -1) return
-    setCurrentStarIndex(currentHRNumber)
+      const currentHRNumber:number = bsc5.data.findIndex(item => item[0] === HRRefNumber)
+      if (currentHRNumber === -1) return
+      setCurrentStarIndex(currentHRNumber)
+    }
     let latNum: number = Number(latRef.current.value.trim())
     let longNum: number = Number(longRef.current.value.trim())
 
@@ -262,7 +269,7 @@ function App() {
               value={location?.latitude ?? ""} 
               ref={latRef} 
               size={7} 
-              onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}>
+              onChange = {() => {if (cityRef.current) cityRef.current.value = ""}}>
             </input>
             &deg;
           </div>
@@ -274,7 +281,8 @@ function App() {
               value={location?.longitude ?? ""}
               ref={longRef} 
               size={7} 
-              onChange = {() => {if (cityRef.current)cityRef.current.value = ""}}>
+              onChange = {() => {
+                if (cityRef.current) cityRef.current.value = ""}}>
             </input>
             &deg;
           </div>
@@ -287,10 +295,10 @@ function App() {
             </button>
           </div>
           <div className="userLine topLine">
-            <span>Enter star HR number: </span>
+            <span>Enter star HR number or name: </span>
           </div>
           <div className="userLine topLine">
-            <input ref={HRRef} size={7}></input>
+            <input ref={starInputRef} size={10}></input>
           </div>
           <div className="userLine">
             <button type="button" onClick={handleButtonClick}>

@@ -5,7 +5,7 @@ export type Coordinates = {
 
 export type bsc5Type = {
   columns: string[],
-  data: [number, string | null, number, number, number, string | null, number][]
+  data: [number, string | null, number, number, number, string | null, number, string | null][]
 }
 
 export type citiesType = [string, number, number][]
