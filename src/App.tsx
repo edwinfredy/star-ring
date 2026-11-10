@@ -4,26 +4,12 @@ import {type boxValuesType, type Coordinates, type bsc5Type, type citiesType} fr
 import bsc5Data from "./assets/data/bsc5.json";
 import cities from "./assets/data/cities.json";
 import Scene from './Scene';
+import StarDataDisplayer from './StarDataDisplayer';
 /* import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing"; */
 
 const citiesList: citiesType = cities as citiesType;
 
 const bsc5: bsc5Type = bsc5Data as bsc5Type;
-
-function StarDataDisplayer({chosenStar}: {chosenStar: typeof bsc5['data'][number]}) {
-  return (
-    <div id="dataWindow">
-      HR{chosenStar[0]} &nbsp;
-      Bayer Designation: {chosenStar[1]} &nbsp;
-      Right Ascension: {chosenStar[2]} &nbsp;
-      Declination: {chosenStar[3]} &nbsp;
-      Visual Magnitude: {chosenStar[4]} &nbsp;
-      Multiple System: {chosenStar[5]} &nbsp;
-      Class: {chosenStar[6]} &nbsp;
-      Name: {chosenStar[7]}
-    </div>
-  )
-}
 
 function App() {
   const starDistance = 4
