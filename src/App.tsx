@@ -13,10 +13,6 @@ function App() {
   const starDistance = 4
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
-/*   const [locationAvailable, setLocationAvailable] = useState<number>(0); */
-/*   const [longitudeInput, setLongitudeInput] = useState(
-      String(location?.longitude ?? "")
-  ); */
 
   return (
     <>

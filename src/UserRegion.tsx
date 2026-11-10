@@ -60,39 +60,39 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
         setCurrentStarIndex(nameMatchedIndex)
         }
         else {
-        let HRRefNumber: number = Number(starInputRef.current.value)
-        if (HRRefNumber < 0 || HRRefNumber > 9109) return
-        if (!Number.isInteger(HRRefNumber)) return
+            let HRRefNumber: number = Number(starInputRef.current.value)
+            if (HRRefNumber < 0 || HRRefNumber > 9109) return
+            if (!Number.isInteger(HRRefNumber)) return
 
-        const currentHRNumber:number = bsc5.data.findIndex(item => item[0] === HRRefNumber)
-        if (currentHRNumber === -1) return
-        setCurrentStarIndex(currentHRNumber)
+            const currentHRNumber:number = bsc5.data.findIndex(item => item[0] === HRRefNumber)
+            if (currentHRNumber === -1) return
+            setCurrentStarIndex(currentHRNumber)
         }
         let latNum: number = Number(latRef.current.value.trim())
         let longNum: number = Number(boxValues.longitudeBox.trim())
 
         if (
-        -90 <= latNum &&
-        latNum <= 90 &&
-        -180 <= longNum &&
-        longNum <= 180) {
-        setLocation({ latitude: latNum, longitude: longNum });
+            -90 <= latNum &&
+            latNum <= 90 &&
+            -180 <= longNum &&
+            longNum <= 180) {
+            setLocation({ latitude: latNum, longitude: longNum });
         };
     }
 
     return (
         <div id="userRegion">
-        <div className="userLine">
-        <span>Type a nearby city: </span>
-        </div>
-        <div className="userLine">
-        <input 
-            type="text" 
-            list="cities-list" 
-            ref={cityRef} 
-            size={12} 
-            onChange={(e) => handleCityChange(e.target.value)} 
-            />
+            <div className="userLine">
+                <span>Type a nearby city: </span>
+            </div>
+            <div className="userLine">
+                <input 
+                    type="text" 
+                    list="cities-list" 
+                    ref={cityRef} 
+                    size={12} 
+                    onChange={(e) => handleCityChange(e.target.value)} 
+                />
         </div>
         <datalist id="cities-list">
         {citiesList.map((row, index) => (
@@ -138,36 +138,36 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
             />
         &deg;
         </div>
-        <div className="userLine fullLine">
-        <span>OR</span>
-        </div>
-        <div className="userLine fullLine locationButton">
-        <button type="button" onClick={handleLocationButtonClick}>
-            Detect Location
-        </button>
-        </div>
-        <div className="userLine topLine">
-        <span>Enter star HR number or name: </span>
-        </div>
-        <div className="userLine topLine">
-        <input ref={starInputRef} size={10} list="starNamesList"></input>
-        </div>
-        <datalist id="starNamesList">
-        {bsc5.data.map((row, index) => (
-            row[7] !== null && (
-                <option key={index} value={row[7]} />
-            )))}
-        </datalist>
-        <div className="userLine">
-        <button type="button" onClick={handleGoButtonClick} style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            WebkitTouchCallout: "none",
-            touchAction: "none",
-        }}>
-            Go
-        </button>
-        </div>
+            <div className="userLine fullLine">
+                <span>OR</span>
+            </div>
+            <div className="userLine fullLine locationButton">
+                <button type="button" onClick={handleLocationButtonClick}>
+                    Detect Location
+                </button>
+            </div>
+            <div className="userLine topLine">
+            <span>Enter star HR number or name: </span>
+            </div>
+            <div className="userLine topLine">
+            <input ref={starInputRef} size={10} list="starNamesList"></input>
+            </div>
+            <datalist id="starNamesList">
+            {bsc5.data.map((row, index) => (
+                row[7] !== null && (
+                    <option key={index} value={row[7]} />
+                )))}
+            </datalist>
+            <div className="userLine">
+                <button type="button" onClick={handleGoButtonClick} style={{
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
+                    WebkitTouchCallout: "none",
+                    touchAction: "none",
+                }}>
+                    Go
+                </button>
+            </div>
         </div>
     )
 }
