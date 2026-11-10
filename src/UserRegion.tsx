@@ -4,35 +4,32 @@ import cities from "./assets/data/cities.json";
 
 const citiesList: citiesType = cities as citiesType;
 
-const starInputRef = useRef<HTMLInputElement>(null);
-const latRef = useRef<HTMLInputElement>(null);
-const longRef = useRef<HTMLInputElement>(null);
-const cityRef = useRef<HTMLInputElement>(null);
-
-const [boxValues, setBoxValues] = useState<boxValuesType>({
-    cityBox: "", latitudeBox: "", longitudeBox: "", starBox: ""
-});
-  
-  function handleCityChange(typedContent: string) {
-    const selectedCity = citiesList.find((row) => row[0] === typedContent)
-    if (selectedCity) {
-        /*  setLocation({latitude: selectedCity[1], longitude: selectedCity[2]}) */
-        setBoxValues((prev) => {
-            return ({
-                ...prev,
-                longitudeBox: selectedCity[2].toString(),
-                latitudeBox: selectedCity[1].toString()
-            })
-        })
-    }
-}
-
 function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
     bsc5: bsc5Type, 
     setCurrentStarIndex: React.Dispatch<React.SetStateAction<number | null>>,
     setLocation: React.Dispatch<React.SetStateAction<Coordinates | null>>
 }) {
+    const starInputRef = useRef<HTMLInputElement>(null);
+    const latRef = useRef<HTMLInputElement>(null);
+    const longRef = useRef<HTMLInputElement>(null);
+    const cityRef = useRef<HTMLInputElement>(null);
+    const [boxValues, setBoxValues] = useState<boxValuesType>({
+        cityBox: "", latitudeBox: "", longitudeBox: "", starBox: ""
+    });
 
+    function handleCityChange(typedContent: string) {
+        const selectedCity = citiesList.find((row) => row[0] === typedContent)
+        if (selectedCity) {
+            /*  setLocation({latitude: selectedCity[1], longitude: selectedCity[2]}) */
+            setBoxValues((prev) => {
+                return ({
+                    ...prev,
+                    longitudeBox: selectedCity[2].toString(),
+                    latitudeBox: selectedCity[1].toString()
+                })
+            })
+        }
+    }
     function handleLocationButtonClick() {
         if (!navigator.geolocation) {
             //setLocationAvailable(2) // Location access fail
