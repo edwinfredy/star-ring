@@ -1,6 +1,7 @@
 import StarLine from './StarLine';
 import { useThree, useFrame } from "@react-three/fiber";
-import { Spherical, MathUtils} from "three";import EarthModel from './EarthModel';
+import { Spherical, MathUtils} from "three";
+import EarthModel from './EarthModel';
 import StarDot from './StarDot';
 import StarRing from './StarRing';
 import LocationMarker from './LocationMarker';import { OrbitControls } from "@react-three/drei";
