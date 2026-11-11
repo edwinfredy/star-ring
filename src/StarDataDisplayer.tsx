@@ -1,8 +1,7 @@
 import type { bsc5Type } from "./types"
 
-function StarDataDisplayer({chosenStar, LST, risingTime, settingTime}: {
-    chosenStar: bsc5Type["data"][number], 
-    LST: number, 
+function StarDataDisplayer({chosenStar, risingTime, settingTime}: {
+    chosenStar: bsc5Type["data"][number],
     risingTime: number, 
     settingTime: number
 }) {

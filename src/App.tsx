@@ -89,7 +89,7 @@ function App() {
           LST = {LST}
         />
         {currentStarIndex && location && (
-          <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} LST = {LST} risingTime = {risingTime} settingTime = {settingTime} />
+          <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} risingTime = {risingTime} settingTime = {settingTime} />
         )}
 
       </section>
