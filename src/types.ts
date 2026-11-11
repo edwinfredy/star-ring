@@ -11,3 +11,5 @@ export type bsc5Type = {
 export type citiesType = [string, number, number][]
 
 export type boxValuesType = {cityBox: string, latitudeBox: string, longitudeBox: string, starBox: string}
+
+export type starStatusType = 'rises-and-sets' | 'always-risen' | 'always-set' | null;

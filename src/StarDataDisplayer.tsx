@@ -1,32 +1,32 @@
-import type { bsc5Type } from "./types"
+import type { bsc5Type, starStatusType } from "./types"
 
-function StarDataDisplayer({chosenStar, risingTime, settingTime}: {
+function StarDataDisplayer({chosenStar, risingTime, settingTime, starStatus}: {
     chosenStar: bsc5Type["data"][number],
     risingTime: number, 
-    settingTime: number
+    settingTime: number,
+    starStatus: starStatusType
 }) {
   return (
     <div id="dataWindow">
       <span>
-        {chosenStar[7] ? chosenStar[7] : `HR${chosenStar[0]}`} has
-        {chosenStar[1] ? ` Bayer Designation: ${chosenStar[1]}` : ""} &nbsp;
-        Right Ascension: {chosenStar[2]} &nbsp;
-        Declination: {chosenStar[3]} &nbsp;
-        Visual Magnitude: {chosenStar[4]} &nbsp;
-        Multiple System: {chosenStar[5]} &nbsp;
-        Class: {chosenStar[6]}. &nbsp;
-        {risingTime && settingTime ? 
-            `It rises at ${new Date(risingTime).toLocaleString(
-                "en-US", {
-                    hour: "2-digit", 
-                    minute: "2-digit", 
-                    hour12: true
-            })} and sets at ${new Date(settingTime).toLocaleString(
-                "en-US", {
-                    hour: "2-digit", 
-                    minute: "2-digit", 
-                    hour12: true
-            })}.`: ""}
+        {chosenStar[7] ? chosenStar[7] : `HR ${chosenStar[0]}`}
+        {starStatus === "always-risen" ? 
+            ` is always visible in the sky at this location.` : 
+            starStatus === "always-set" ? 
+                ` is never visible in the sky at this location.` : 
+                risingTime && settingTime ? ` rises at ${new Date(risingTime).toLocaleString(
+                    "en-US", {
+                        hour: "2-digit", 
+                        minute: "2-digit", 
+                        hour12: true
+                })} and sets at ${new Date(settingTime).toLocaleString(
+                    "en-US", {
+                        hour: "2-digit", 
+                        minute: "2-digit", 
+                        hour12: true
+                })} at this location.` :
+                ""
+        }
       </span>
     </div>
   )

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { type Coordinates, type bsc5Type } from './types'
+import { type Coordinates, type bsc5Type, type starStatusType } from './types'
 import bsc5Data from "./assets/data/bsc5.json";
 import Scene from './Scene';
 import StarDataDisplayer from './StarDataDisplayer';
@@ -15,6 +15,7 @@ function App() {
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [currentStarIndex, setCurrentStarIndex] = useState<number | null>(null);
 
+  let starStatus: starStatusType = null;
   let LST: number = 0;
   let risingTime: number = 0;
   let settingTime: number = 0;
@@ -63,10 +64,17 @@ function App() {
 
     const h = Math.floor(totalSeconds / 3600);
     const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60; */    
+    const s = totalSeconds % 60; */
     const declination = chosenStar[3];
     const rightAscension = chosenStar[2];
     const cosHourAngle = -Math.tan(MathUtils.degToRad(location.latitude)) * Math.tan(MathUtils.degToRad(declination));
+    if (cosHourAngle > 1) {
+      starStatus = 'always-set'
+    } else if (cosHourAngle < -1) {
+      starStatus = 'always-risen'
+    } else {
+      starStatus = 'rises-and-sets'
+    }
     const hourAngle = MathUtils.radToDeg(Math.acos(cosHourAngle));
     const risingTimeLST = ((rightAscension - hourAngle) % 360 + 360) % 360;
     const settingTimeLST = ((rightAscension + hourAngle) % 360 + 360) % 360;
@@ -74,6 +82,7 @@ function App() {
     console.log(risingTimeLST, settingTimeLST)
     risingTime = Date.now() + ((((risingTimeLST - LST) % 360) + 360) % 360) / earthSiderealAngularVelocity;
     settingTime = Date.now() + ((((settingTimeLST - LST) % 360) + 360) % 360) / earthSiderealAngularVelocity;
+    console.log(risingTime, settingTime)
   }
 
   if (location) calculateStarTimes()
@@ -89,7 +98,11 @@ function App() {
           LST = {LST}
         />
         {currentStarIndex && location && (
-          <StarDataDisplayer chosenStar = {bsc5.data[currentStarIndex]} risingTime = {risingTime} settingTime = {settingTime} />
+          <StarDataDisplayer 
+          chosenStar = {bsc5.data[currentStarIndex]} 
+          risingTime = {risingTime} 
+          settingTime = {settingTime} 
+          starStatus = {starStatus}/>
         )}
 
       </section>
