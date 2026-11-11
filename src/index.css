@@ -128,6 +128,9 @@ p {margin: 0}
   background-color: #000000;
 }
 
+.mobileOnly {
+  display: none;
+}
 @media (max-width: 600px) {
   #userRegion {
     width: 100%;
@@ -139,6 +142,9 @@ p {margin: 0}
   }
   .userLine {
     margin-bottom: 5px;
+  }
+  .mobileOnly {
+    display: inline-block;
   }
 }
 .fullLine {grid-column: span 2;

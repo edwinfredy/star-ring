@@ -156,7 +156,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
                 </button>
             </div>
             <div>
-                <button className = "" onClick = {() => {userRegion.current?.classList.toggle("mobileCollapsed")}}>&#8693;</button>
+                <button className = "mobileOnly" onClick = {() => {userRegion.current?.classList.toggle("mobileCollapsed")}}>&#8693;</button>
             </div>
         </div>
     )
