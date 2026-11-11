@@ -79,10 +79,8 @@ function App() {
     const risingTimeLST = ((rightAscension - hourAngle) % 360 + 360) % 360;
     const settingTimeLST = ((rightAscension + hourAngle) % 360 + 360) % 360;
     const earthSiderealAngularVelocity = 360.98564736629 / 86400000
-    console.log(risingTimeLST, settingTimeLST)
     risingTime = Date.now() + ((((risingTimeLST - LST) % 360) + 360) % 360) / earthSiderealAngularVelocity;
     settingTime = Date.now() + ((((settingTimeLST - LST) % 360) + 360) % 360) / earthSiderealAngularVelocity;
-    console.log(risingTime, settingTime)
   }
 
   if (location) calculateStarTimes()
