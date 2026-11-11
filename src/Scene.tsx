@@ -4,7 +4,8 @@ import { Spherical, MathUtils} from "three";
 import EarthModel from './EarthModel';
 import StarDot from './StarDot';
 import StarRing from './StarRing';
-import LocationMarker from './LocationMarker';import { OrbitControls } from "@react-three/drei";
+import LocationMarker from './LocationMarker';
+import { OrbitControls } from "@react-three/drei";
 import { useState, Suspense, useEffect, useRef} from 'react'
 import { Canvas } from "@react-three/fiber";
 import { Group} from "three";
