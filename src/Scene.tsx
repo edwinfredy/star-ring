@@ -47,64 +47,15 @@ function CameraAutoMove({location, autoMove, setAutoMove}: {
   return null
 }
 
-function Scene({ location, chosenStar, starDistance }: {
+function Scene({ location, chosenStar, starDistance, LST }: {
   location: Coordinates | null,
   chosenStar: bsc5Type["data"][number] | null,
-  starDistance: number
+  starDistance: number,
+  LST: number
 }) {
   const globeRef = useRef<Group>(null!)
   const bloomComponents = useRef<Group>(null!)
   const [autoMove, setAutoMove] = useState(true)
-
-  let LST: number = 0;
-
-  function calculateLocalSiderealTime() {
-    if (!location) return;
-    const date = new Date()
-    let year = date.getUTCFullYear()
-    let month = date.getUTCMonth() + 1;
-    const day = date.getUTCDate();
-    const hour = date.getUTCHours();
-    const minute = date.getUTCMinutes();
-    const second = date.getUTCSeconds();
-    const millisecond = date.getUTCMilliseconds();
-    if (month <= 2) {
-      year--;
-      month += 12
-    }
-    const A = Math.floor(year / 100);
-    const B = 2 - A + Math.floor(A / 4);
-
-    const JD =
-      Math.floor(365.25 * (year + 4716)) +
-      Math.floor(30.6001 * (month + 1)) +
-      day + B - 1524.5 + (
-        hour + minute / 60 +
-        second / 3600 +
-        millisecond / 3600000
-      )
-      / 24;
-
-    const T = (JD - 2451545.0) / 36525;
-    let GMST: number =
-      280.46061837 +
-      360.98564736629 * (JD - 2451545.0) +
-      0.000387933 * T * T -
-      (T * T * T) / 38710000;
-
-    GMST = ((GMST % 360) + 360) % 360;
-    // Local Mean Sidereal Time
-    LST = ((GMST + location!.longitude) % 360 + 360) % 360;
-
-/*     // Convert degrees to sidereal time
-    const totalSeconds = LST * 240;
-
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60; */
-  }
-
-  if (location) calculateLocalSiderealTime()
 
   return (
     <Canvas camera={{ position: [0, 0, cameraDistance], fov: 45 }} frameloop="demand"  style={{
