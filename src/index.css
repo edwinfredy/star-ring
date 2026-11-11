@@ -81,6 +81,7 @@ code {
   background: var(--code-bg);
 }
 #main {height: 100vh;}
+
 #userRegion {
   position: fixed; 
   top: 0; 
@@ -89,11 +90,12 @@ code {
   width: 25%; 
   text-align: left; 
   padding: 20px; 
-  display: grid; 
+  display: grid;
   grid-template-columns: 1fr 1fr; 
   gap: 0px;
+  transition: .5s;
 }
-/* #userRegion * {padding: 1%;} */
+
 p {margin: 0}
 #dataWindow {position: fixed; bottom: 0; right: 0; z-index: 1; padding: 20px; }
 .userLine {margin-bottom: 5px; }
@@ -131,6 +133,9 @@ p {margin: 0}
     width: 100%;
     padding-top: 10px;
     padding-left: 10px;
+  }
+  #userRegion.mobileCollapsed {
+    top: -20vh;
   }
   .userLine {
     margin-bottom: 5px;

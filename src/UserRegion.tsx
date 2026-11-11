@@ -9,6 +9,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
     setCurrentStarIndex: React.Dispatch<React.SetStateAction<number | null>>,
     setLocation: React.Dispatch<React.SetStateAction<Coordinates | null>>
 }) {
+    const userRegion = useRef<HTMLInputElement>(null);
     const starInputRef = useRef<HTMLInputElement>(null);
     const latRef = useRef<HTMLInputElement>(null);
     const longRef = useRef<HTMLInputElement>(null);
@@ -81,7 +82,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
     }
 
     return (
-        <div id="userRegion">
+        <div id="userRegion" ref = {userRegion}>
             <div className="userLine"><span>Type a nearby city: </span></div>
             <div className="userLine">
                 <input 
@@ -153,6 +154,9 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
                     }}>
                     Go
                 </button>
+            </div>
+            <div>
+                <button className = "" onClick = {() => {userRegion.current?.classList.toggle("mobileCollapsed")}}>&#8693;</button>
             </div>
         </div>
     )
