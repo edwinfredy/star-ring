@@ -30,24 +30,8 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+span {
+  color: #9ca3af;
 }
 
 #root {
@@ -94,6 +78,7 @@ code {
   grid-template-columns: 1fr 1fr; 
   gap: 0px;
   transition: .5s;
+  align-items: center;
 }
 
 p {margin: 0}
@@ -150,7 +135,17 @@ p {margin: 0}
 .fullLine {grid-column: span 2;
   text-align: center;
 }
+.bottomLine {
+  border-bottom: solid 1px rgb(167, 167, 167);
+  padding-bottom: 10px !important;
+}
 .topLine {
   border-top: solid 1px rgb(167, 167, 167);
   padding-top: 10px !important;
+}
+.exampleStarsButton {
+  padding: 2px 5px !important;
+  font-size: 15px;
+  margin: 0px 4px;
+  color: #9ca3af !important;
 }

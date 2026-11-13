@@ -128,15 +128,33 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
                         longitudeBox: e.target.value
                     })
                 })}}
-                />
+            />
             &deg;
         </div>
             <div className="userLine fullLine"><span>OR</span></div>
             <div className="userLine fullLine locationButton">
                 <button type="button" onClick={handleLocationButtonClick}>Detect Location</button>
             </div>
-            <div className="userLine topLine"><span>Enter star HR Number (1-9110) or name: </span></div>
-            <div className="userLine topLine">
+            <div className='userLine fullLine topLine'></div>
+            <div className="userLine">
+                <span>Enter star HR Number (1-9110) or name:
+                </span>
+                <span>
+                    <br />Eg. 
+                </span>
+                <button 
+                    className='exampleStarsButton' 
+                    onClick={(e) => starInputRef.current ? starInputRef.current.value = e.currentTarget.textContent : null}
+                >
+                    1115
+                </button>
+                <button 
+                    className='exampleStarsButton' 
+                    onClick={(e) => starInputRef.current ? starInputRef.current.value = e.currentTarget.textContent : null}>
+                    Vega
+                </button>
+            </div>
+            <div className="userLine">
                 <input ref={starInputRef} size={10} list="starNamesList"></input>
             </div>
             <datalist id="starNamesList">
@@ -145,6 +163,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
                     <option key={index} value={row[7]} />
                 )))}
             </datalist>
+            <div className='userLine fullLine topLine'></div>
             <div className="userLine">
                 <button type="button" onClick={handleGoButtonClick} style={{
                         userSelect: "none",
