@@ -1,4 +1,4 @@
-import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, Group, Color} from "three";
+import {MathUtils, LineBasicMaterial, Vector3, BufferGeometry, Line, Raycaster, Group, Color, LineDashedMaterial} from "three";
 import {useMemo} from "react";
 import type {Coordinates, bsc5Type} from "./types"
 import { Select } from "@react-three/postprocessing";
@@ -44,12 +44,25 @@ function StarLine({earthPoint, starData, starDistance, globeRef, LST}: {
     new Vector3().fromArray(starPointCoords)
   ], [earthPoint, starData])
   const geometry = useMemo(() => new BufferGeometry().setFromPoints(points), [points])
+  const solidLine = new Line(geometry, new LineBasicMaterial({ color: new Color(3, 3, 3), toneMapped: false}))
+  const dashedLine = new Line(geometry, new LineDashedMaterial({ color: new Color(1, 0, 0), toneMapped: false, dashSize: 0.08, gapSize: 0.08}))
+  dashedLine.computeLineDistances();
+  const distances = dashedLine.geometry.attributes.lineDistance;
+
+  for (let i = 0; i < distances.count; i++) {
+    distances.setX(i, distances.getX(i) + dashedLine.material.gapSize)
+  }
+
+distances.needsUpdate = true;
   return (
-    intersects.length === 0 && (
+    intersects.length === 0 ?
       <Select enabled>
-        <primitive object={new Line(geometry, new LineBasicMaterial({ color: new Color(3, 3, 3), toneMapped: false}))} />
+        <primitive object={solidLine} />
       </Select>
-    )
+    :
+      <Select enabled>
+        <primitive object={dashedLine} />
+      </Select>
   )
 }
 
