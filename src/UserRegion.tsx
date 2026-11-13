@@ -137,7 +137,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
             </div>
             <div className='userLine fullLine topLine'></div>
             <div className="userLine">
-                <span>Enter star HR Number (1-9110) or name:
+                <span>Enter star HR Number (1-9110) or name: 
                 </span>
                 <span>
                     <br />Eg. 
