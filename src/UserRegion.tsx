@@ -55,14 +55,14 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
         if (!starInputRef.current) return;
         if (starInputRef.current.value.trim() === "") return;
         if (Number.isNaN(Number(starInputRef.current.value))) {
-        let HRRefContent: string = starInputRef.current.value.trim()
-        const nameMatchedIndex:number = bsc5.data.findIndex(item => item[7]?.toLowerCase() === HRRefContent.toLowerCase())
-        if (nameMatchedIndex === -1) return;
-        setCurrentStarIndex(nameMatchedIndex)
+            let HRRefContent: string = starInputRef.current.value.trim()
+            const nameMatchedIndex:number = bsc5.data.findIndex(item => item[7]?.toLowerCase() === HRRefContent.toLowerCase())
+            if (nameMatchedIndex === -1) return;
+            setCurrentStarIndex(nameMatchedIndex)
         }
         else {
             let HRRefNumber: number = Number(starInputRef.current.value)
-            if (HRRefNumber < 0 || HRRefNumber > 9109) return
+            if (HRRefNumber < 0 || HRRefNumber > 9110) return
             if (!Number.isInteger(HRRefNumber)) return
 
             const currentHRNumber:number = bsc5.data.findIndex(item => item[0] === HRRefNumber)
@@ -135,7 +135,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
             <div className="userLine fullLine locationButton">
                 <button type="button" onClick={handleLocationButtonClick}>Detect Location</button>
             </div>
-            <div className="userLine topLine"><span>Enter star HR number or name: </span></div>
+            <div className="userLine topLine"><span>Enter star HR Number (1-9110) or name: </span></div>
             <div className="userLine topLine">
                 <input ref={starInputRef} size={10} list="starNamesList"></input>
             </div>
