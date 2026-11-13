@@ -45,7 +45,7 @@ function StarLine({earthPoint, starData, starDistance, globeRef, LST}: {
   ], [earthPoint, starData])
   const geometry = useMemo(() => new BufferGeometry().setFromPoints(points), [points])
   const solidLine = new Line(geometry, new LineBasicMaterial({ color: new Color(3, 3, 3), toneMapped: false}))
-  const dashedLine = new Line(geometry, new LineDashedMaterial({ color: new Color(1, 0, 0), toneMapped: false, dashSize: 0.08, gapSize: 0.08}))
+  const dashedLine = new Line(geometry, new LineDashedMaterial({ color: new Color("#a50202"), toneMapped: false, dashSize: 0.08, gapSize: 0.08}))
   dashedLine.computeLineDistances();
   const distances = dashedLine.geometry.attributes.lineDistance;
 
