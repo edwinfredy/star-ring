@@ -14,15 +14,17 @@ function About() {
             </h2>
 
             <p>
-                City data sourced from
-                <a href="https://bamwor.com">World Cities Dataset 2026</a>
-                by Bamwor, based on GeoNames.
-                Licensed under
-                <a href="https://creativecommons.org/licenses/by/4.0/">
-                CC BY 4.0
-                </a>. (Modified for this project).
+                City data sourced from <a href="https://bamwor.com"> World Cities Dataset 2026</a> by Bamwor, based on GeoNames.
+                Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. (Modified for this project).
             </p>
-
+            <p>
+                Star data sourced from the <a href="https://simbad.cfa.harvard.edu/simbad/">SIMBAD Astronomical Database</a>.
+                Licensed under <a href="https://opendatacommons.org/licenses/odbl/1-0/">Open Database License v1.0</a>. (Modified for this Project).
+            </p>
+            <p>
+                3-D asset(s) sourced from <a href="https://science.nasa.gov/3d-resources/">NASA 3D Resources</a>.
+                Available in the public domain. (Modified for this project).
+            </p>
         </section>
     )
 }
