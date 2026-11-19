@@ -6,7 +6,9 @@ import Scene from './Scene';
 import StarDataDisplayer from './StarDataDisplayer';
 import UserRegion from './UserRegion';
 import Footer from './Footer';
+import { BrowserRouter, Route, Routes } from 'react-router';
 import { MathUtils } from 'three';
+import About from './pages/About';
 /* import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing"; */
 
 const bsc5: bsc5Type = bsc5Data as bsc5Type;
@@ -86,8 +88,8 @@ function App() {
 
   if (location) calculateStarTimes()
 
-  return (
-    <>
+  function HomePage() {
+    return (
       <section id="main">
         <UserRegion bsc5 = {bsc5} setCurrentStarIndex = {setCurrentStarIndex} setLocation = {setLocation}/>
         <Scene
@@ -98,14 +100,25 @@ function App() {
         />
         {currentStarIndex && location && (
           <StarDataDisplayer 
-          chosenStar = {bsc5.data[currentStarIndex]} 
-          risingTime = {risingTime} 
-          settingTime = {settingTime} 
-          starStatus = {starStatus}/>
+            chosenStar = {bsc5.data[currentStarIndex]} 
+            risingTime = {risingTime} 
+            settingTime = {settingTime} 
+            starStatus = {starStatus}
+          />
         )}
-
         <Footer />
       </section>
+    )
+  }
+
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path = "/about" element={<About />} />
+          <Route path="/*" element={<HomePage />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
