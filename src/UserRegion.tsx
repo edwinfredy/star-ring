@@ -135,7 +135,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
             <div className="userLine fullLine locationButton">
                 <button type="button" onClick={handleLocationButtonClick}>Detect Location</button>
             </div>
-            <div className='userLine fullLine topLine'></div>
+            <div className='userLine fullLine bottomLine onlyLine'></div>
             <div className="userLine">
                 <span>Enter star HR Number (1-9110) or name: 
                 </span>
@@ -163,7 +163,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
                     <option key={index} value={row[7]} />
                 )))}
             </datalist>
-            <div className='userLine fullLine topLine'></div>
+            <div className='userLine fullLine bottomLine onlyLine'></div>
             <div className="userLine">
                 <button type="button" onClick={handleGoButtonClick} style={{
                         userSelect: "none",

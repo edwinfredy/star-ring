@@ -5,6 +5,7 @@ import bsc5Data from "./assets/data/bsc5.json";
 import Scene from './Scene';
 import StarDataDisplayer from './StarDataDisplayer';
 import UserRegion from './UserRegion';
+import Footer from './Footer';
 import { MathUtils } from 'three';
 /* import { EffectComposer, SelectiveBloom } from "@react-three/postprocessing"; */
 
@@ -102,8 +103,8 @@ function App() {
           settingTime = {settingTime} 
           starStatus = {starStatus}/>
         )}
-        
 
+        <Footer />
       </section>
     </>
   )

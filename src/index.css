@@ -81,7 +81,7 @@ code {
 }
 
 p {margin: 0}
-#dataWindow {position: fixed; bottom: 0; right: 0; z-index: 1; padding: 20px; }
+#dataWindow {position: fixed; bottom: 50px; right: 0; z-index: 1; padding: 20px; }
 .userLine {margin-bottom: 5px; }
 #userRegion input {
   background-color: black;
@@ -147,4 +147,9 @@ p {margin: 0}
   font-size: 15px;
   margin: 0px 4px;
   color: #9ca3af !important;
+}
+#footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
 }
