@@ -47,7 +47,6 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
     )}
 
     const handleGoButtonClick = () => {
-        // Checking lat and long validity
         if (!latRef.current) return;
         if (latRef.current.value.trim() === "" || boxValues.longitudeBox.trim() === "") return;
         if (Number.isNaN(Number(latRef.current.value.trim())) || (Number.isNaN(Number(boxValues.longitudeBox.trim())))) return;
