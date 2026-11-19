@@ -51,9 +51,9 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
         if (!latRef.current) return;
         if (latRef.current.value.trim() === "" || boxValues.longitudeBox.trim() === "") return;
         if (Number.isNaN(Number(latRef.current.value.trim())) || (Number.isNaN(Number(boxValues.longitudeBox.trim())))) return;
-
         if (!starInputRef.current) return;
         if (starInputRef.current.value.trim() === "") return;
+
         if (Number.isNaN(Number(starInputRef.current.value))) {
             let HRRefContent: string = starInputRef.current.value.trim()
             const nameMatchedIndex:number = bsc5.data.findIndex(item => item[7]?.toLowerCase() === HRRefContent.toLowerCase())
@@ -79,6 +79,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
             longNum <= 180) {
             setLocation({ latitude: latNum, longitude: longNum });
         };
+        userRegion.current?.classList.add("mobileCollapsed")
     }
 
     return (
