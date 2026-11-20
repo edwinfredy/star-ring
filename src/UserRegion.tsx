@@ -79,6 +79,7 @@ function UserRegion({bsc5, setCurrentStarIndex, setLocation}: {
             setLocation({ latitude: latNum, longitude: longNum });
         };
         userRegion.current?.classList.add("mobileCollapsed")
+
     }
 
     return (

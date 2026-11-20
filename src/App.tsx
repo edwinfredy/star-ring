@@ -13,6 +13,49 @@ import About from './pages/About';
 
 const bsc5: bsc5Type = bsc5Data as bsc5Type;
 
+function HomePage({
+  setCurrentStarIndex, 
+  setLocation, 
+  currentStarIndex, 
+  starDistance, 
+  LST, 
+  risingTime, 
+  settingTime, 
+  starStatus, 
+  location
+}: {
+  setCurrentStarIndex: React.Dispatch<React.SetStateAction<number | null>>, 
+  setLocation: React.Dispatch<React.SetStateAction<Coordinates | null>>, 
+  currentStarIndex: number | null, 
+  starDistance: number, 
+  LST: number, 
+  risingTime: number, 
+  settingTime: number, 
+  starStatus: starStatusType, 
+  location: Coordinates | null
+}) {
+  return (
+    <section id="main">
+      <UserRegion bsc5 = {bsc5} setCurrentStarIndex = {setCurrentStarIndex} setLocation = {setLocation}/>
+      <Scene
+        location={location} 
+        chosenStar = {currentStarIndex ? bsc5.data[currentStarIndex] : null} 
+        starDistance={starDistance}
+        LST = {LST}
+      />
+      {currentStarIndex && location && (
+        <StarDataDisplayer 
+          chosenStar = {bsc5.data[currentStarIndex]} 
+          risingTime = {risingTime} 
+          settingTime = {settingTime} 
+          starStatus = {starStatus}
+        />
+      )}
+      <Footer />
+    </section>
+  )
+}
+
 function App() {
   const starDistance = 4
   const [location, setLocation] = useState<Coordinates | null>(null);
@@ -25,6 +68,7 @@ function App() {
 
   function calculateStarTimes() {
     if (!location || !currentStarIndex) return;
+
     const chosenStar = bsc5.data[currentStarIndex]
     const date = new Date()
     let year = date.getUTCFullYear()
@@ -88,35 +132,22 @@ function App() {
 
   if (location) calculateStarTimes()
 
-  function HomePage() {
-    return (
-      <section id="main">
-        <UserRegion bsc5 = {bsc5} setCurrentStarIndex = {setCurrentStarIndex} setLocation = {setLocation}/>
-        <Scene
-          location={location} 
-          chosenStar = {currentStarIndex ? bsc5.data[currentStarIndex] : null} 
-          starDistance={starDistance}
-          LST = {LST}
-        />
-        {currentStarIndex && location && (
-          <StarDataDisplayer 
-            chosenStar = {bsc5.data[currentStarIndex]} 
-            risingTime = {risingTime} 
-            settingTime = {settingTime} 
-            starStatus = {starStatus}
-          />
-        )}
-        <Footer />
-      </section>
-    )
-  }
-
   return (
     <>
       <BrowserRouter>
         <Routes>
+          <Route path="/*" element={<HomePage 
+            setCurrentStarIndex = {setCurrentStarIndex} 
+            setLocation={setLocation} 
+            currentStarIndex={currentStarIndex}
+            starDistance ={starDistance}
+            LST={LST}
+            risingTime = {risingTime}
+            settingTime = {settingTime}
+            starStatus = {starStatus}
+            location={location}
+          />} />
           <Route path = "/about" element={<About />} />
-          <Route path="/*" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </>
