@@ -81,7 +81,7 @@ code {
 }
 
 p {margin: 0}
-#dataWindow {position: fixed; bottom: 50px; right: 0; z-index: 1; padding: 20px; }
+#dataWindow {position: fixed; bottom: 50px; right: 0; z-index: 1; padding: 20px; pointer-events: none; user-select: none;}
 .userLine {margin-bottom: 5px; }
 #userRegion input {
   background-color: black;
